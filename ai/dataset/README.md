@@ -1,25 +1,57 @@
-# Dataset Overview
+# Dataset — Skill Predictor
 
-The dataset used in this project was downloaded from the following source:  
-[Kaggle Career Path Prediction Dataset](https://www.kaggle.com/datasets/ministerjohn/career-path-prediction-for-different-fields)
+## Source
 
-## Dataset Features
+The dataset (`dataset_skill_predictor.csv`) maps student intelligence profiles to job professions, based on **Gardner's Theory of Multiple Intelligences**.
 
-- **Field**: The field of study chosen by the student. This categorical variable includes options such as Engineering, Medicine, Business, Computer Science, Architecture, Finance, Law, Education, Marketing, Psychology, Art, Biology, Physics, Chemistry, and Music.
-- **Career**: The anticipated career path of the student within their chosen field. This categorical variable includes a wide range of career options tailored to each field of study (90 unique career options), such as Mechanical Engineer, Doctor, Entrepreneur, Software Developer, Architect, Financial Advisor, Lawyer, Teacher, Marketing Manager, Psychologist, Artist, Biologist, Physicist, Chemist, Musician, etc.
-- **GPA**: The Grade Point Average of the student (0 - 5.0)
-- **Extracurricular Activities**: The number of extracurricular activities the student has participated in outside of their regular curriculum.
-- **Internships**: The number of internships the student has completed.
-- **Projects**: The number of relevant projects completed by the student.
-- **Leadership Positions**: Indicates whether the student has held any leadership positions in school organizations or clubs (binary variable).
-- **Field Specific Courses**: The number of courses taken by the student specific to their field of study.
-- **Research Experience**: Indicates whether the student has participated in any research projects (binary variable).
-- **Coding Skills**: Proficiency level in programming languages relevant to the field (on a scale of 0 to 4).
-- **Communication Skills**: Proficiency level in communication, including writing and speaking (on a scale of 0 to 4).
-- **Problem Solving Skills**: Ability to solve complex problems (on a scale of 0 to 4).
-- **Teamwork Skills**: Ability to work effectively in a team environment (on a scale of 0 to 4).
-- **Analytical Skills**: Ability to analyze and interpret data (on a scale of 0 to 4).
-- **Presentation Skills**: Ability to present ideas effectively (on a scale of 0 to 4).
-- **Networking Skills**: Ability to build and maintain professional relationships (on a scale of 0 to 4).
+## At a Glance
 
-Each entry represents a specific student. The dataset will undergo further analysis and preprocessing before proceeding to model training.
+| Property | Value |
+|---|---|
+| File | `dataset_skill_predictor.csv` |
+| Rows | 3,600 |
+| Unique Professions | 72 |
+| Feature Columns | 8 intelligence scores (numeric) |
+| Target Column | `Job profession` |
+
+## Column Reference
+
+### Columns Used by the Model
+
+| Column | Type | Description |
+|---|---|---|
+| `Job profession` | Categorical (target) | The profession associated with the student's intelligence profile (72 unique values, e.g., Astronomer, Software Developer, Teacher, etc.) |
+| `Linguistic` | Numeric | Verbal and written language proficiency |
+| `Musical` | Numeric | Rhythm, pitch, and musical comprehension |
+| `Bodily` | Numeric | Body coordination and kinesthetic ability |
+| `Logical - Mathematical` | Numeric | Reasoning, abstract thinking, and math |
+| `Spatial-Visualization` | Numeric | 3D thinking, spatial reasoning, and visualization |
+| `Interpersonal` | Numeric | Social interaction, empathy, and teamwork |
+| `Intrapersonal` | Numeric | Self-reflection and emotional intelligence |
+| `Naturalist` | Numeric | Understanding of nature and the environment |
+
+### Columns Dropped During Preprocessing
+
+| Column | Reason for Dropping |
+|---|---|
+| `Sr.No.` | Row index — no predictive value |
+| `Course` | Empty / unused field |
+| `Student` | Student identifier (e.g., S1, S2) — no predictive value |
+| `s/p` | Student/profession key — no predictive value |
+| `P1` – `P8` | Categorical proficiency labels (POOR, AVG, BEST) — redundant with the numeric intelligence scores |
+
+## Sample Rows
+
+```
+Job profession  | Student | Linguistic | Musical | Bodily | Logical-Math | Spatial | Interpersonal | Intrapersonal | Naturalist
+Astronomer      | S1      | 11         | 5       | 12     | 16           | 17      | 11            | 18            | 19
+Astronomer      | S2      | 12         | 6       | 12     | 16           | 16      | 11            | 18            | 19
+```
+
+## Notes
+
+- Each profession has approximately 50 student entries (3,600 ÷ 72 = 50).
+- The raw intelligence scores are normalized to a `[0, 1]` range using `MinMaxScaler` before being fed to the model.
+- The dataset is used as-is for training — no external augmentation is applied. Gaussian noise is only added during robustness testing (see the notebook).
+
+Each entry represents a specific student's intelligence profile and their associated career recommendation. For the full ML pipeline, see [`../dataset_exploration.ipynb`](../dataset_exploration.ipynb).
