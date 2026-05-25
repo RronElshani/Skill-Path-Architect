@@ -10,6 +10,8 @@ Help young graduates understand their post-secondary options by mapping their pe
 
 ## Dataset
 
+Dataset Link: https://www.kaggle.com/datasets/tea340yashjoshi/skill-and-career-recommendation-dataset
+
 **Source:** `dataset/dataset_skill_predictor.csv`
 
 | Property | Value |
