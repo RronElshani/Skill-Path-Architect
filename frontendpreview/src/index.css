@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  background-color: #f8fafc;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .card {
+    @apply rounded-xl border border-slate-200 bg-white shadow-card;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-soft transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900;
+  }
+
+  .input-field {
+    @apply block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 shadow-soft transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+}
+
+input[type='range'].slider-base {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, #2563eb var(--value, 50%), #e2e8f0 var(--value, 50%));
+  outline: none;
+}
+
+input[type='range'].slider-base::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 2px solid #2563eb;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+input[type='range'].slider-base::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+input[type='range'].slider-base::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 2px solid #2563eb;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2);
+  cursor: pointer;
+}
