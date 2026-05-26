@@ -19,7 +19,7 @@ export default function Login() {
               <path d="M20 5l-8 8" />
             </svg>
           </span>
-          <span className="text-base font-semibold tracking-tight">Skill Path Architect</span>
+          <span className="text-base font-semibold tracking-tight">AI Guidance Counselor</span>
         </Link>
 
         <div className="max-w-md">
@@ -49,7 +49,7 @@ export default function Login() {
                   <path d="M20 5l-8 8" />
                 </svg>
               </span>
-              <span className="text-base font-semibold tracking-tight text-slate-900">Skill Path Architect</span>
+              <span className="text-base font-semibold tracking-tight text-slate-900">AI Guidance Counselor</span>
             </Link>
           </div>
 
@@ -94,7 +94,7 @@ export default function Login() {
           </form>
 
           <p className="mt-6 text-center text-sm text-slate-600">
-            New to Skill Path Architect?{' '}
+            New to AI Guidance Counselor?{' '}
             <Link to="/register" className="font-medium text-brand-700 hover:text-brand-800">
               Create an account
             </Link>

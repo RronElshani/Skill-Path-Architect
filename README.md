@@ -1,8 +1,8 @@
-# 🎯 Skill Path Architect
+# 🎯 AI Guidance Counselor
 
 **Helping recently graduated high school students discover their best career paths.**
 
-Skill Path Architect is a full-stack web application that guides young graduates through the overwhelming transition from school to career. By evaluating a student's personal strengths across eight dimensions of intelligence (based on Gardner's Theory of Multiple Intelligences), the platform uses a trained machine learning model to recommend the most fitting career paths — turning self-reflection into a concrete, data-driven action plan.
+AI Guidance Counselor is a full-stack web application that guides young graduates through the overwhelming transition from school to career. By evaluating a student's personal strengths across eight dimensions of intelligence (based on Gardner's Theory of Multiple Intelligences), the platform uses a trained machine learning model to recommend the most fitting career paths — turning self-reflection into a concrete, data-driven action plan.
 
 ---
 
@@ -69,7 +69,7 @@ The AI module uses a dataset of 3,600 student profiles across 72 unique professi
 ## 📂 Project Structure
 
 ```
-Skill-Path-Architect/
+AI-Guidance-Counselor/
 │
 ├── ai/                            # AI / Machine Learning module
 │   ├── dataset/
@@ -120,7 +120,7 @@ Skill-Path-Architect/
 
 ```bash
 git clone <repo-url>
-cd Skill-Path-Architect
+cd AI-Guidance-Counselor
 ```
 
 ### 2. Install Dependencies

@@ -1,6 +1,6 @@
 # AI Module — Career Prediction Engine
 
-This module contains the machine learning pipeline that powers **Skill Path Architect's** career recommendation system. It predicts suitable career paths for recently graduated high school students based on their self-assessed intelligence profile using **Gardner's Theory of Multiple Intelligences**.
+This module contains the machine learning pipeline that powers **AI Guidance Counselor's** career recommendation system. It predicts suitable career paths for recently graduated high school students based on their self-assessed intelligence profile using **Gardner's Theory of Multiple Intelligences**.
 
 ## Goal
 

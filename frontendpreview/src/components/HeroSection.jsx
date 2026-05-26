@@ -24,7 +24,7 @@ export default function HeroSection() {
             Discover the career path that aligns with how you think.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-slate-600">
-            Skill Path Architect guides recent high school graduates through a structured self-assessment grounded in Howard Gardner&apos;s theory of Multiple Intelligences, then maps each profile to evidence-based career trajectories.
+            AI Guidance Counselor guides recent high school graduates through a structured self-assessment grounded in Howard Gardner&apos;s theory of Multiple Intelligences, then maps each profile to evidence-based career trajectories.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">

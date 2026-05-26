@@ -163,7 +163,7 @@ export default function Home() {
           <SectionTitle
             eyebrow="Project overview"
             title="A research-informed companion for the first decision after high school."
-            description="Skill Path Architect translates a respected cognitive framework into a clear, modern experience. Each interaction is designed to help graduates reflect, compare and decide with confidence."
+            description="AI Guidance Counselor translates a respected cognitive framework into a clear, modern experience. Each interaction is designed to help graduates reflect, compare and decide with confidence."
           />
 
           <div className="mt-12 grid gap-5 md:grid-cols-3">

@@ -15,7 +15,7 @@ const Dashboard = () => {
       {/* Header */}
       <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-indigo-400">Skill Path Architect</h1>
+          <h1 className="text-xl font-bold text-indigo-400">AI Guidance Counselor</h1>
           <div className="flex items-center gap-4">
             <span className="text-gray-400 text-sm">
               Welcome, <span className="text-white font-medium">{user?.name || 'User'}</span>
@@ -38,7 +38,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Placeholder cards */}
           <div className="p-6 bg-gray-900 border border-gray-800 rounded-xl hover:border-indigo-500/50 transition-colors">
-            <h3 className="text-lg font-semibold mb-2">My Skill Paths</h3>
+            <h3 className="text-lg font-semibold mb-2">My Career Paths</h3>
             <p className="text-gray-400 text-sm">View and manage your custom learning paths.</p>
           </div>
           <div className="p-6 bg-gray-900 border border-gray-800 rounded-xl hover:border-indigo-500/50 transition-colors">

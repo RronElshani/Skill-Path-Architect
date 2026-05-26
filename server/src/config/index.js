@@ -4,7 +4,7 @@ dotenv.config()
 const config = {
   port: process.env.PORT || 5004,
   nodeEnv: process.env.NODE_ENV || 'development',
-  mongodbUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/skill-path-architect',
+  mongodbUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/ai-guidance-counselor',
   jwt: {
     accessSecret: process.env.JWT_ACCESS_SECRET,
     refreshSecret: process.env.JWT_REFRESH_SECRET,

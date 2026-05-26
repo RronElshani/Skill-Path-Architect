@@ -16,7 +16,7 @@ export default function Register() {
                 <path d="M20 5l-8 8" />
               </svg>
             </span>
-            <span className="text-base font-semibold tracking-tight text-slate-900">Skill Path Architect</span>
+            <span className="text-base font-semibold tracking-tight text-slate-900">AI Guidance Counselor</span>
           </Link>
 
           <div className="mt-8">
@@ -96,7 +96,7 @@ export default function Register() {
         <div className="max-w-md">
           <h2 className="text-3xl font-semibold leading-tight">A guided start to a thoughtful career decision.</h2>
           <p className="mt-4 text-sm leading-relaxed text-brand-100">
-            Skill Path Architect combines academic research with a clear interface so that students can explore their strengths confidently and without pressure.
+            AI Guidance Counselor combines academic research with a clear interface so that students can explore their strengths confidently and without pressure.
           </p>
 
           <ul className="mt-8 space-y-3 text-sm">

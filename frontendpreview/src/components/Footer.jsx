@@ -47,7 +47,7 @@ export default function Footer() {
                   <path d="M20 5l-8 8" />
                 </svg>
               </span>
-              <span className="text-base font-semibold tracking-tight text-slate-900">Skill Path Architect</span>
+              <span className="text-base font-semibold tracking-tight text-slate-900">AI Guidance Counselor</span>
             </div>
             <p className="text-sm leading-relaxed text-slate-600">
               A research-driven career guidance platform grounded in Howard Gardner&apos;s theory of Multiple Intelligences, designed for recent high school graduates.
@@ -72,7 +72,7 @@ export default function Footer() {
 
         <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-slate-200 pt-6 sm:flex-row sm:items-center">
           <p className="text-xs text-slate-500">
-            &copy; {year} Skill Path Architect. University capstone project. All rights reserved.
+            &copy; {year} AI Guidance Counselor. University capstone project. All rights reserved.
           </p>
           <p className="text-xs text-slate-500">
             Built with React, Vite and Tailwind CSS.

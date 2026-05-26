@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "Skill Path Architect - Backend API",
+  "description": "AI Guidance Counselor - Backend API",
   "main": "src/server.js",
   "type": "module",
   "scripts": {

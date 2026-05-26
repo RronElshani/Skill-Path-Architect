@@ -25,7 +25,7 @@ export default function Navbar() {
             </svg>
           </span>
           <div className="flex flex-col leading-none">
-            <span className="text-base font-semibold tracking-tight text-slate-900">Skill Path Architect</span>
+            <span className="text-base font-semibold tracking-tight text-slate-900">AI Guidance Counselor</span>
             <span className="mt-0.5 text-[11px] font-medium uppercase tracking-wider text-slate-500">Career guidance platform</span>
           </div>
         </Link>
