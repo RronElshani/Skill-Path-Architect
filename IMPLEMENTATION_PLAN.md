@@ -31,100 +31,102 @@
 
 ---
 
-## Epic 1 — AI/ML Production Pipeline
+## Epic 1 — AI/ML Academic Requirements & Production Pipeline
 
-### US-1.1: Model Training Script (Production-Ready)
+### US-1.1: Classification Models (4 Classifiers)
 
-> *As a developer, I want a standalone Python training script so that the model can be retrained reproducibly without a Jupyter notebook.*
-
-> [!NOTE]
-> A trained model already exists at `ai/models/career_prediction_model.h5` and the training logic is in `initial_model_training.ipynb`. This story is about extracting that into production `.py` files.
+> *As an academic researcher, I want to implement and evaluate at least 4 different classifiers so that I meet the course requirement.*
 
 **Acceptance Criteria:**
-- [ ] A `train.py` script in `ai/src/` that loads the dataset, preprocesses it, trains the model, and saves it to `ai/models/`
-- [ ] Uses argument parsing (e.g., `argparse`) for hyperparameters (learning rate, max depth, n_estimators, test size, random seed)
-- [ ] Outputs training metrics (accuracy, Top-5 accuracy) to console and to a `results/` folder as JSON
-- [ ] Saves the trained model in a portable format (`.joblib` or `.json`)
-- [ ] Saves the fitted `LabelEncoder` and `MinMaxScaler` alongside the model so inference can decode predictions
-- [ ] Includes a `requirements.txt` with pinned versions
+- [ ] Split dataset into training and testing sets.
+- [ ] Perform appropriate data preprocessing (scaling, encoding).
+- [ ] Implement XGBoost (Tree-based) - already partially done.
+- [ ] Implement K-Nearest Neighbors (Distance-based).
+- [ ] Implement Logistic Regression or SVM (Linear).
+- [ ] Implement Neural Network (PyTorch or scikit-learn MLPClassifier).
+- [ ] For all classifiers: experiment with feature selection/reduction (e.g., PCA) to determine if using fewer features improves performance. Document the methods and results.
+- [ ] For all classifiers: perform hyperparameter tuning and document the tested values and final selected values.
+- [ ] Evaluate all using: accuracy, precision, recall, F1-score, and confusion matrix.
+- [ ] Present results in a comparison table and discuss the best performing classifier and why.
 
 **Tasks:**
-- [ ] T-1.1.1: Create `ai/src/` directory structure (`data/`, `models/`, `results/`, `src/`)
-- [ ] T-1.1.2: Extract data loading & preprocessing from notebook into `ai/src/preprocessing.py`
-- [ ] T-1.1.3: Extract model training logic into `ai/src/train.py` with argparse
-- [ ] T-1.1.4: Implement model + scaler + encoder serialization (joblib)
-- [ ] T-1.1.5: Add console + JSON output for training metrics
-- [ ] T-1.1.6: Create `ai/requirements.txt` with pinned dependencies
-- [ ] T-1.1.7: Verify end-to-end: `python src/train.py` produces a working saved model
+- [ ] T-1.1.1: Set up the evaluation script `ai/src/evaluate_classifiers.py`.
+- [ ] T-1.1.2: Implement preprocessing and feature reduction experiments.
+- [ ] T-1.1.3: Implement and tune KNN, Logistic Regression/SVM, and XGBoost.
+- [ ] T-1.1.4: Generate comparison table and confusion matrices.
 
 ---
 
-### US-1.2: Model Comparison & Architecture Evaluation
+### US-1.2: Neural Network Architecture Experiments
 
-> *As a researcher, I want to compare multiple ML architectures on the same dataset so that I can justify the final model choice with empirical evidence.*
+> *As an academic researcher, I want to experiment with different Neural Network architectures to fulfill the specific NN course requirement.*
 
 **Acceptance Criteria:**
-- [ ] A `compare_models.py` script that trains and evaluates at least 4 different classifiers on the same train/test split
-- [ ] Models to compare: XGBoost, Random Forest, SVM (with RBF kernel), K-Nearest Neighbors, and optionally a simple Neural Network (sklearn MLPClassifier or PyTorch)
-- [ ] For each model, records: Top-1 accuracy, Top-5 accuracy, training time, inference time, and accuracy under noise (σ=0.06)
-- [ ] Outputs a comparison table as CSV and a summary markdown file
-- [ ] Generates comparison visualizations (bar charts) saved as PNG images
+- [ ] Explain the chosen baseline architecture (number of layers, units per layer, activation functions).
+- [ ] Implement at least two different Neural Network architectures (e.g., changing number of hidden layers or units).
+- [ ] Train and evaluate both architectures.
+- [ ] Discuss how the architecture changes affected performance.
 
 **Tasks:**
-- [ ] T-1.2.1: Create `ai/src/compare_models.py` with a model registry pattern
-- [ ] T-1.2.2: Implement each classifier with appropriate hyperparameter grids
-- [ ] T-1.2.3: Implement shared evaluation function (Top-1, Top-5, noise robustness, timing)
-- [ ] T-1.2.4: Generate comparison table (CSV) and summary (markdown)
-- [ ] T-1.2.5: Generate bar chart visualizations using matplotlib
-- [ ] T-1.2.6: Document findings and justify XGBoost selection (or change if another wins)
+- [ ] T-1.2.1: Implement Architecture A (e.g., 1 hidden layer).
+- [ ] T-1.2.2: Implement Architecture B (e.g., 2 hidden layers).
+- [ ] T-1.2.3: Compare and document the results and the impact of the architecture.
 
 ---
 
-### US-1.3: Inference Module
+### US-1.3: Clustering Analysis
 
-> *As a backend developer, I want a Python inference module that accepts 8 intelligence scores and returns Top-5 career predictions with confidence scores, so the backend can call it.*
+> *As an academic researcher, I want to apply a clustering algorithm to discover natural groupings in the data.*
 
-> [!NOTE]
-> `python_demo_of_model_application.ipynb` already contains working prediction logic including model loading, score normalization (1-5 → 0-1 scale), and Top-5 extraction via `predict_proba`. Extract and refactor this into a clean module.
+**Acceptance Criteria:**
+- [ ] Remove the target labels (professions) from the dataset.
+- [ ] Implement at least one clustering algorithm (e.g., K-Means or DBSCAN).
+- [ ] Experiment with different parameters (number of clusters 'k', distance metrics, initialization) and discuss their effect on results.
+- [ ] Visualize the clusters (e.g., using PCA or t-SNE for dimensionality reduction to 2D scatter plots).
+- [ ] Compare the resulting clusters with the true class labels to see how well they align.
+- [ ] Document any unexpected groupings or new insights.
+
+**Tasks:**
+- [ ] T-1.3.1: Create `ai/src/clustering.py`.
+- [ ] T-1.3.2: Run clustering with different parameters and initialize methods.
+- [ ] T-1.3.3: Generate 2D visualizations of the clusters and boundaries.
+- [ ] T-1.3.4: Evaluate cluster alignment with actual professions.
+
+---
+
+### US-1.4: Production Inference Module
+
+> *As a backend developer, I want a Python inference module using the best performing model, so the backend can call it.*
 
 **Acceptance Criteria:**
 - [ ] A `predict.py` module with a `predict(scores: list[float]) -> list[dict]` function
-- [ ] Loads the saved model, scaler, and encoder from `ai/models/`
-- [ ] Accepts raw (unnormalized) scores, normalizes them internally, and returns Top-5 predictions with profession names and confidence percentages
+- [ ] Loads the best saved model, scaler, and encoder from `ai/models/`
+- [ ] Accepts raw scores, normalizes them internally, and returns Top-5 predictions with confidence percentages
 - [ ] Has proper error handling (invalid input length, missing model files, out-of-range scores)
-- [ ] Can be imported as a module or run standalone for testing: `python predict.py --scores 11,5,12,16,17,11,18,19`
 
 **Tasks:**
-- [ ] T-1.3.1: Create `ai/src/predict.py` with model/scaler/encoder loading
-- [ ] T-1.3.2: Implement `predict()` function with normalization + Top-5 extraction
-- [ ] T-1.3.3: Add input validation and error handling
-- [ ] T-1.3.4: Add CLI mode for standalone testing
-- [ ] T-1.3.5: Write unit tests for the prediction module (`ai/tests/test_predict.py`)
+- [ ] T-1.4.1: Create `ai/src/predict.py` with model/scaler/encoder loading
+- [ ] T-1.4.2: Implement `predict()` function with normalization + Top-5 extraction
+- [ ] T-1.4.3: Add input validation and error handling
 
 ---
 
-### US-1.4: AI Microservice (Flask/FastAPI)
+### US-1.5: AI Microservice (Flask/FastAPI)
 
-> *As a backend developer, I want the AI model served via a lightweight HTTP API so the Node.js backend can call it without embedding Python.*
+> *As a backend developer, I want the AI model served via a lightweight HTTP API so the Node.js backend can call it.*
 
 **Acceptance Criteria:**
 - [ ] A `server.py` (FastAPI or Flask) in `ai/` that exposes `POST /predict` endpoint
-- [ ] Accepts JSON body: `{ "scores": { "linguistic": 11, "musical": 5, ... } }`
+- [ ] Accepts JSON body: `{ "scores": { "linguistic": 11, ... } }`
 - [ ] Returns JSON: `{ "predictions": [{ "profession": "...", "confidence": 0.95 }, ...] }`
-- [ ] Loads model once at startup (not per-request)
-- [ ] Includes input validation (8 scores required, numeric, within valid range)
+- [ ] Loads model once at startup
 - [ ] Health check endpoint: `GET /health`
-- [ ] Configurable port via environment variable
 
 **Tasks:**
-- [ ] T-1.4.1: Set up FastAPI/Flask app structure in `ai/src/server.py`
-- [ ] T-1.4.2: Create prediction endpoint with request/response schemas
-- [ ] T-1.4.3: Integrate the `predict.py` module
-- [ ] T-1.4.4: Add input validation and error responses
-- [ ] T-1.4.5: Add health check endpoint
-- [ ] T-1.4.6: Add CORS configuration for the Node.js backend
-- [ ] T-1.4.7: Update `ai/requirements.txt` with server dependencies
-- [ ] T-1.4.8: Test end-to-end with curl/Postman
+- [ ] T-1.5.1: Set up FastAPI/Flask app structure in `ai/src/server.py`
+- [ ] T-1.5.2: Create prediction endpoint integrating `predict.py`
+- [ ] T-1.5.3: Add CORS configuration and requirements.txt updates
+
 
 ---
 
@@ -567,28 +569,23 @@
 
 ---
 
-### US-7.7: AI Model Documentation
+### US-7.7: Academic Project Report
 
-> *As an academic reviewer, I want documentation of the ML methodology, model comparisons, and performance metrics.*
+> *As an academic student, I want to write a formal report meeting the course requirements so that I can submit it for grading.*
 
 **Acceptance Criteria:**
-- [ ] AI methodology document (`docs/ai_methodology.md`)
-- [ ] Dataset description with statistical summary
-- [ ] Preprocessing pipeline explanation with rationale
-- [ ] Model comparison table with all metrics
-- [ ] Hyperparameter tuning details
-- [ ] Robustness analysis with noise testing methodology
-- [ ] Feature importance analysis
-- [ ] Final model justification
-- [ ] Embedded charts and visualizations
+- [ ] Report document (`docs/Academic_Report.md` or PDF).
+- [ ] Must contain specific sections: Hyrje (Introduction), Përshkrimi i datasetit (Dataset Description), Metodologjia (Methodology), Rezultatet (Results), Diskutimi (Discussion), Përfundimi (Conclusion), Referencat (References).
+- [ ] Methodology must cover: train/test split, preprocessing, feature reduction experiments, hyperparameter tuning for the 4 models, NN architectures, and clustering parameters.
+- [ ] Results must include: the comparison table (Accuracy, Precision, Recall, F1, Confusion Matrices) and Clustering visualizations (alignment with classes).
+- [ ] All code must be clean, executable, and accompanied by a README and `requirements.txt`.
+- [ ] GitHub link must be public with a commit history showing continuous contribution.
 
 **Tasks:**
-- [ ] T-7.7.1: Write dataset section with statistics
-- [ ] T-7.7.2: Write preprocessing methodology
-- [ ] T-7.7.3: Write model comparison analysis (from US-1.2 output)
-- [ ] T-7.7.4: Write robustness analysis
-- [ ] T-7.7.5: Generate and embed feature importance charts
-- [ ] T-7.7.6: Write final model selection justification
+- [ ] T-7.7.1: Write Introduction and Dataset Description.
+- [ ] T-7.7.2: Write Methodology (detailing classification and clustering setup).
+- [ ] T-7.7.3: Write Results and Discussion (comparing models and analyzing clusters).
+- [ ] T-7.7.4: Ensure AI README has clear setup/run instructions and code is clean.
 
 ---
 
