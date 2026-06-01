@@ -89,7 +89,7 @@ export default function Assessment() {
   }
 
   return (
-    <div className="container-page py-12 lg:py-16">
+    <>
       <div className="mx-auto max-w-3xl">
         <SectionTitle
           eyebrow="Self-assessment"
@@ -171,7 +171,7 @@ export default function Assessment() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

@@ -325,8 +325,8 @@ export default function Results() {
         <div className="card p-6 sm:p-8">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">Intelligence profile</h2>
-              <p className="mt-1 text-sm text-slate-600">A visual snapshot across all eight Gardner dimensions.</p>
+              <h2 className="text-lg font-semibold text-slate-900">Neural intelligence map</h2>
+              <p className="mt-1 text-sm text-slate-600">8-dimension Gardner profile visualized by the model.</p>
             </div>
             <span className="badge bg-brand-50 text-brand-700">
               Updated {new Date(predictionsData.timestamp).toLocaleDateString()}
@@ -347,6 +347,9 @@ export default function Results() {
             ))}
           </div>
         </div>
+        <div className="lg:col-span-5">
+          <AiSummaryPanel title={personalizedSummary.title} body={personalizedSummary.body} highlights={personalizedSummary.highlights} />
+        </div>
       </section>
 
       <section className="mt-10 grid gap-8 lg:grid-cols-12">
@@ -356,9 +359,11 @@ export default function Results() {
               <h2 className="text-lg font-semibold text-slate-900">Top five career matches</h2>
               <p className="mt-1 text-sm text-slate-600">Ranked by alignment between your dominant intelligences and the prediction model.</p>
             </div>
+            <p className="mt-1 text-sm text-slate-600">XGBoost output ranked by profile alignment. Click for model reasoning.</p>
           </div>
-          <div className="mt-5">
-            <RecommendationList recommendations={careerRecommendations} />
+          <div className="flex flex-wrap gap-2">
+            <Link to="/assessment" className="btn-ai-ghost">Retake</Link>
+            <Link to="/dashboard" className="btn-ai">Dashboard</Link>
           </div>
         </div>
 
@@ -388,29 +393,24 @@ export default function Results() {
         </aside>
       </section>
 
-      <section className="mt-12">
-        <div className="card p-6 sm:p-8">
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900">Actionable next steps</h2>
-              <p className="mt-1 text-sm text-slate-600">A short plan to keep momentum after reading your report.</p>
-            </div>
-            <span className="badge bg-slate-100 text-slate-700">{nextSteps.length} suggestions</span>
+      <section className="ai-panel p-6 sm:p-8">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">AI-suggested next steps</h2>
+            <p className="mt-1 text-sm text-slate-600">Personalized action plan from your report.</p>
           </div>
-
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {nextSteps.map((step, index) => (
-              <div key={step.title} className="flex items-start gap-4 rounded-xl border border-slate-200 bg-slate-50/40 p-5">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-sm font-semibold text-white">
-                  {index + 1}
-                </span>
-                <div>
-                  <h3 className="text-sm font-semibold text-slate-900">{step.title}</h3>
-                  <p className="mt-1 text-sm text-slate-600">{step.description}</p>
-                </div>
+          <AiBadge label={`${nextSteps.length} steps`} />
+        </div>
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          {nextSteps.map((step, i) => (
+            <div key={step.title} className="flex items-start gap-4 rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50/80 to-violet-50/40 p-5">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-sm font-semibold text-white">{i + 1}</span>
+              <div>
+                <h3 className="text-sm font-semibold text-slate-900">{step.title}</h3>
+                <p className="mt-1 text-sm text-slate-600">{step.description}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </section>
     </div>
