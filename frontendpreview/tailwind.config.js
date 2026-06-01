@@ -25,7 +25,18 @@ export default {
       },
       boxShadow: {
         card: '0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.06)',
-        soft: '0 2px 8px rgba(15, 23, 42, 0.05)'
+        soft: '0 2px 8px rgba(15, 23, 42, 0.05)',
+        'ai-glow': '0 0 40px rgba(99, 102, 241, 0.15), 0 0 80px rgba(139, 92, 246, 0.08)',
+        'ai-card': '0 4px 24px rgba(99, 102, 241, 0.12), 0 1px 3px rgba(15, 23, 42, 0.06)'
+      },
+      animation: {
+        'ai-pulse': 'ai-pulse 2.5s ease-in-out infinite'
+      },
+      keyframes: {
+        'ai-pulse': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.5' }
+        }
       }
     }
   },

@@ -6,6 +6,8 @@ import Register from './pages/Register.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import Assessment from './pages/Assessment.jsx'
 import Results from './pages/Results.jsx'
+import CareerDetail from './pages/CareerDetail.jsx'
+import IntelligenceReport from './pages/IntelligenceReport.jsx'
 import Profile from './pages/Profile.jsx'
 import AdminUsers from './pages/AdminUsers.jsx'
 
@@ -19,6 +21,8 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/assessment" element={<Assessment />} />
         <Route path="/results" element={<Results />} />
+        <Route path="/results/intelligences" element={<IntelligenceReport />} />
+        <Route path="/results/careers/:careerId" element={<CareerDetail />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin/users" element={<AdminUsers />} />
       </Route>
