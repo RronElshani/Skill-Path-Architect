@@ -1,16 +1,100 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import SectionTitle from '../components/SectionTitle.jsx'
 import AssessmentSlider from '../components/AssessmentSlider.jsx'
 import { intelligenceDimensions } from '../services/intelligenceScores.js'
 
 export default function Assessment() {
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  // Initialize all dimensions to moderate score of 3.0 (on 1-5 scale)
+  const [scores, setScores] = useState({
+    language_skills: 3.0,
+    math_and_logic: 3.0,
+    spatial_awareness: 3.0,
+    physical_prowess: 3.0,
+    musical_ability: 3.0,
+    collaboration_skills: 3.0,
+    self_awareness: 3.0,
+    sustainability_focus: 3.0
+  })
+
+  const handleScoreChange = (id, value) => {
+    setScores((prev) => ({
+      ...prev,
+      [id]: value
+    }))
+    setError(null)
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+
+    // Preprocessing step: Convert the 1-5 UX scores to the original 0-20 dataset scale
+    // mapping formula: (value - 1) * 20.0 / 4.0 = (value - 1) * 5
+    const preprocessedPayload = {
+      language_skills: (scores['language_skills'] - 1.0) * 5.0,
+      musical_ability: (scores['musical_ability'] - 1.0) * 5.0,
+      physical_prowess: (scores['physical_prowess'] - 1.0) * 5.0,
+      math_and_logic: (scores['math_and_logic'] - 1.0) * 5.0,
+      spatial_awareness: (scores['spatial_awareness'] - 1.0) * 5.0,
+      collaboration_skills: (scores['collaboration_skills'] - 1.0) * 5.0,
+      self_awareness: (scores['self_awareness'] - 1.0) * 5.0,
+      sustainability_focus: (scores['sustainability_focus'] - 1.0) * 5.0,
+      is_preprocessed: true
+    }
+
+    try {
+      const response = await fetch('http://localhost:5001/api/predict', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(preprocessedPayload)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to fetch predictions from AI service')
+      }
+
+      const data = await response.json()
+      
+      // Persist results and user scores in localStorage
+      localStorage.setItem('career_predictions', JSON.stringify({
+        scores,
+        predictions: data.predictions,
+        timestamp: new Date().toISOString()
+      }))
+
+      // Navigate to results page
+      navigate('/results')
+    } catch (err) {
+      console.error('API Error:', err)
+      setError(
+        'Could not connect to the Python AI service. Please make sure the Flask backend is running on http://localhost:5001'
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSaveAndReturn = () => {
+    localStorage.setItem('saved_scores', JSON.stringify(scores))
+    navigate('/dashboard')
+  }
+
   return (
     <div className="container-page py-12 lg:py-16">
       <div className="mx-auto max-w-3xl">
         <SectionTitle
           eyebrow="Self-assessment"
           title="Reflect on each of the eight intelligence dimensions."
-          description="Move the slider on each card to indicate how strongly that intelligence describes you today. Honest reflection produces the most useful career recommendations."
+          description="Assess your preference on each dimension from 1 (low) to 5 (high). Honest reflection produces the most useful career recommendations."
           align="center"
           className="text-center"
         />
@@ -20,17 +104,24 @@ export default function Assessment() {
         <div className="card flex flex-wrap items-center justify-between gap-4 p-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Estimated time</p>
-            <p className="mt-1 text-base font-semibold text-slate-900">About 12 minutes</p>
+            <p className="mt-1 text-base font-semibold text-slate-900">About 2 minutes</p>
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Dimensions</p>
             <p className="mt-1 text-base font-semibold text-slate-900">8 of 8 covered</p>
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Privacy</p>
-            <p className="mt-1 text-base font-semibold text-slate-900">For academic showcase</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Scale</p>
+            <p className="mt-1 text-base font-semibold text-slate-900">1 to 5 (Integers/Decimals)</p>
           </div>
         </div>
+
+        {error && (
+          <div className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <p className="font-semibold">Prediction Failed</p>
+            <p className="mt-1">{error}</p>
+          </div>
+        )}
 
         <div className="mt-8 grid gap-4">
           {intelligenceDimensions.map((dim) => (
@@ -38,7 +129,8 @@ export default function Assessment() {
               key={dim.id}
               name={dim.name}
               description={dim.description}
-              initial={dim.score}
+              value={scores[dim.id]}
+              onChange={(val) => handleScoreChange(dim.id, val)}
               accent={dim.accent}
             />
           ))}
@@ -48,15 +140,38 @@ export default function Assessment() {
           <div>
             <h3 className="text-base font-semibold text-slate-900">Ready to see your career matches?</h3>
             <p className="mt-1 text-sm text-slate-600">
-              Generate a ranked list of professions tailored to your responses.
+              Submit your scores to the Python AI service to get the top 5 predicted career categories.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Link to="/dashboard" className="btn-secondary">Save and return</Link>
-            <Link to="/results" className="btn-primary">Generate Career Matches</Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={handleSaveAndReturn}
+              disabled={loading}
+              className="btn-secondary disabled:opacity-50"
+            >
+              Save progress
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="btn-primary flex items-center gap-2 disabled:opacity-50"
+            >
+              {loading ? (
+                <>
+                  <svg className="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Processing...
+                </>
+              ) : (
+                'Generate Career Matches'
+              )}
+            </button>
           </div>
         </div>
       </div>
     </div>
   )
 }
+

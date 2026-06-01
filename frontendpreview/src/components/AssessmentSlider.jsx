@@ -1,7 +1,10 @@
 import { useState } from 'react'
 
-export default function AssessmentSlider({ name, description, initial = 50, accent = 'brand' }) {
-  const [value, setValue] = useState(initial)
+export default function AssessmentSlider({ name, description, value: controlledValue, onChange, initial = 3, accent = 'brand' }) {
+  const [localValue, setLocalValue] = useState(initial)
+  
+  const isControlled = controlledValue !== undefined
+  const value = isControlled ? controlledValue : localValue
 
   const accentMap = {
     brand: 'bg-brand-50 text-brand-700',
@@ -14,7 +17,26 @@ export default function AssessmentSlider({ name, description, initial = 50, acce
     teal: 'bg-teal-50 text-teal-700'
   }
 
-  const intensityLabel = value < 25 ? 'Emerging' : value < 50 ? 'Developing' : value < 75 ? 'Confident' : 'Pronounced'
+  // Define intensity label based on 1-5 scale
+  const intensityLabel = value < 2.0 
+    ? 'Emerging' 
+    : value < 3.5 
+      ? 'Developing' 
+      : value < 4.5 
+        ? 'Confident' 
+        : 'Pronounced'
+
+  const handleChange = (e) => {
+    const val = Number(e.target.value)
+    if (isControlled) {
+      if (onChange) onChange(val)
+    } else {
+      setLocalValue(val)
+    }
+  }
+
+  // Calculate percentage for progress fill: (value - min) / (max - min) * 100
+  const progressPercent = ((value - 1) / 4) * 100
 
   return (
     <div className="card p-6">
@@ -24,7 +46,7 @@ export default function AssessmentSlider({ name, description, initial = 50, acce
           <p className="mt-2.5 text-sm leading-relaxed text-slate-600">{description}</p>
         </div>
         <div className="flex shrink-0 items-baseline gap-2 sm:flex-col sm:items-end sm:gap-0">
-          <span className="text-3xl font-semibold text-slate-900">{value}</span>
+          <span className="text-3xl font-semibold text-slate-900">{value.toFixed(1)}</span>
           <span className="text-xs font-medium uppercase tracking-wider text-slate-500">{intensityLabel}</span>
         </div>
       </div>
@@ -32,20 +54,22 @@ export default function AssessmentSlider({ name, description, initial = 50, acce
       <div className="mt-5">
         <input
           type="range"
-          min="0"
-          max="100"
+          min="1"
+          max="5"
+          step="0.1"
           value={value}
-          onChange={(e) => setValue(Number(e.target.value))}
+          onChange={handleChange}
           className="slider-base"
-          style={{ '--value': `${value}%` }}
+          style={{ '--value': `${progressPercent}%` }}
           aria-label={`${name} score`}
         />
         <div className="mt-2 flex justify-between text-[11px] font-medium uppercase tracking-wider text-slate-400">
-          <span>Low</span>
-          <span>Moderate</span>
-          <span>High</span>
+          <span>1.0 (Low)</span>
+          <span>3.0 (Moderate)</span>
+          <span>5.0 (High)</span>
         </div>
       </div>
     </div>
   )
 }
+
