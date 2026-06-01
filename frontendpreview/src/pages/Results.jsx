@@ -4,9 +4,10 @@ import IntelligenceRadarChart from '../components/ai/IntelligenceRadarChart.jsx'
 import AiSummaryPanel from '../components/ai/AiSummaryPanel.jsx'
 import AiCareerCard from '../components/ai/AiCareerCard.jsx'
 import AiBadge from '../components/ai/AiBadge.jsx'
-import { assessmentReport, careerRecommendations, radarSnapshot, personalizedSummary, nextSteps } from '../services/careerRecommendations.js'
+import { loadPredictions, assessmentReport, careerRecommendations, radarSnapshot, personalizedSummary, nextSteps } from '../services/careerRecommendations.js'
 
 export default function Results() {
+  loadPredictions()
   const topMatch = careerRecommendations[0]
 
   return (

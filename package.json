@@ -1,0 +1,14 @@
+{
+  "name": "skill-path-architect-root",
+  "version": "1.0.0",
+  "description": "Skill Path Architect root concurrent runner",
+  "main": "index.js",
+  "scripts": {
+    "dev:backend": "python ai/app.py",
+    "dev:frontend": "npm run dev --prefix frontendpreview",
+    "dev": "concurrently --kill-others \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

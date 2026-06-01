@@ -2,10 +2,12 @@ import { Link } from 'react-router-dom'
 import IntelligenceRadarChart from '../components/ai/IntelligenceRadarChart.jsx'
 import { AiInsightRow } from '../components/ai/AiCareerCard.jsx'
 import AiBadge from '../components/ai/AiBadge.jsx'
-import { assessmentReport, radarSnapshot, intelligenceInsights } from '../services/careerRecommendations.js'
-import { intelligenceDimensions } from '../services/intelligenceScores.js'
+import { loadPredictions, assessmentReport, radarSnapshot, intelligenceInsights } from '../services/careerRecommendations.js'
+import { loadScores, intelligenceDimensions } from '../services/intelligenceScores.js'
 
 export default function IntelligenceReport() {
+  loadPredictions()
+  loadScores()
   const sorted = [...intelligenceInsights].sort((a, b) => b.score - a.score)
 
   return (

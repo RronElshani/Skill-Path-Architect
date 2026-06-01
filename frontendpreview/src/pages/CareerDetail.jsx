@@ -1,9 +1,10 @@
 import { Link, useParams, Navigate } from 'react-router-dom'
 import AiBadge, { AiSparkle } from '../components/ai/AiBadge.jsx'
 import AiCareerCard, { AiMatchBreakdown } from '../components/ai/AiCareerCard.jsx'
-import { getCareerById, getRelatedCareers } from '../services/careerRecommendations.js'
+import { loadPredictions, getCareerById, getRelatedCareers } from '../services/careerRecommendations.js'
 
 export default function CareerDetail() {
+  loadPredictions()
   const { careerId } = useParams()
   const career = getCareerById(careerId)
   const related = getRelatedCareers(career)
