@@ -35,7 +35,7 @@ export default function AdminUsers() {
   }
 
   return (
-    <div className="container-page py-12 lg:py-16">
+    <>
       <div className="grid items-end gap-6 lg:grid-cols-12">
         <div className="lg:col-span-7">
           <SectionTitle
@@ -148,6 +148,6 @@ export default function AdminUsers() {
           </table>
         </div>
       </div>
-    </div>
+    </>
   )
 }

@@ -1,123 +1,78 @@
 import { Link } from 'react-router-dom'
-import SectionTitle from '../components/SectionTitle.jsx'
-import RecommendationList from '../components/RecommendationList.jsx'
-import SummaryCard from '../components/SummaryCard.jsx'
-import IntelligenceCard from '../components/IntelligenceCard.jsx'
-import {
-  careerRecommendations,
-  radarSnapshot,
-  personalizedSummary,
-  nextSteps
-} from '../services/careerRecommendations.js'
-import { intelligenceDimensions } from '../services/intelligenceScores.js'
+import AiResultsHero from '../components/ai/AiResultsHero.jsx'
+import IntelligenceRadarChart from '../components/ai/IntelligenceRadarChart.jsx'
+import AiSummaryPanel from '../components/ai/AiSummaryPanel.jsx'
+import AiCareerCard from '../components/ai/AiCareerCard.jsx'
+import AiBadge from '../components/ai/AiBadge.jsx'
+import { assessmentReport, careerRecommendations, radarSnapshot, personalizedSummary, nextSteps } from '../services/careerRecommendations.js'
 
 export default function Results() {
-  const dominant = [...intelligenceDimensions].sort((a, b) => b.score - a.score).slice(0, 4)
+  const topMatch = careerRecommendations[0]
 
   return (
-    <div className="container-page py-12 lg:py-16">
-      <div className="grid items-end gap-6 lg:grid-cols-12">
-        <div className="lg:col-span-8">
-          <SectionTitle
-            eyebrow="Career report"
-            title="Your top recommendations and personalized summary."
-            description="Findings combine your self-assessment with the curated career library. Use them as a starting point for advisor conversations and further research."
-          />
-        </div>
-        <div className="flex flex-wrap items-center gap-2 lg:col-span-4 lg:justify-end">
-          <Link to="/assessment" className="btn-secondary">Retake assessment</Link>
-          <Link to="/dashboard" className="btn-primary">Back to dashboard</Link>
-        </div>
-      </div>
+    <div className="ai-mesh -mx-4 space-y-8 rounded-2xl px-4 py-2 sm:-mx-6 sm:px-6">
+      <AiResultsHero report={assessmentReport} topMatch={topMatch} />
 
-      <section className="mt-10">
-        <div className="card p-6 sm:p-8">
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+      <section className="grid gap-6 lg:grid-cols-12">
+        <div className="ai-panel p-6 lg:col-span-7">
+          <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">Intelligence profile</h2>
-              <p className="mt-1 text-sm text-slate-600">A visual snapshot across all eight Gardner dimensions.</p>
+              <h2 className="text-lg font-semibold text-slate-900">Neural intelligence map</h2>
+              <p className="mt-1 text-sm text-slate-600">8-dimension Gardner profile visualized by the model.</p>
             </div>
-            <span className="badge bg-brand-50 text-brand-700">Updated today</span>
+            <Link to="/results/intelligences" className="text-sm font-medium text-indigo-600 hover:text-violet-600">Deep analysis →</Link>
           </div>
-
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {radarSnapshot.map((row) => (
-              <div key={row.axis} className="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-slate-700">{row.axis}</p>
-                  <p className="text-sm font-semibold text-slate-900">{row.value}</p>
-                </div>
-                <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white">
-                  <div className="h-full rounded-full bg-brand-600" style={{ width: `${row.value}%` }} />
-                </div>
-              </div>
+          <div className="mt-4"><IntelligenceRadarChart data={radarSnapshot} /></div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {assessmentReport.dominantIntelligences.map((n) => (
+              <span key={n} className="rounded-lg border border-indigo-100 bg-indigo-50/50 px-3 py-1.5 text-xs font-medium text-indigo-800">↑ {n}</span>
             ))}
           </div>
         </div>
+        <div className="lg:col-span-5">
+          <AiSummaryPanel title={personalizedSummary.title} body={personalizedSummary.body} highlights={personalizedSummary.highlights} />
+        </div>
       </section>
 
-      <section className="mt-10 grid gap-8 lg:grid-cols-12">
-        <div className="lg:col-span-8">
-          <div className="flex items-end justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900">Top five career matches</h2>
-              <p className="mt-1 text-sm text-slate-600">Ranked by alignment between your dominant intelligences and each role.</p>
+      <section>
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-slate-900">AI-ranked career matches</h2>
+              <AiBadge label="Top 5" />
             </div>
+            <p className="mt-1 text-sm text-slate-600">XGBoost output ranked by profile alignment. Click for model reasoning.</p>
           </div>
-          <div className="mt-5">
-            <RecommendationList recommendations={careerRecommendations} />
+          <div className="flex flex-wrap gap-2">
+            <Link to="/assessment" className="btn-ai-ghost">Retake</Link>
+            <Link to="/dashboard" className="btn-ai">Dashboard</Link>
           </div>
         </div>
-
-        <aside className="space-y-6 lg:col-span-4">
-          <SummaryCard
-            title={personalizedSummary.title}
-            body={personalizedSummary.body}
-            highlights={personalizedSummary.highlights}
-            footer="Generated by the LLM-backed summary engine on your latest submission."
-          />
-
-          <div className="card p-6">
-            <h3 className="text-base font-semibold text-slate-900">Dominant strengths</h3>
-            <p className="mt-1 text-sm text-slate-600">Highest scoring dimensions from your assessment.</p>
-            <div className="mt-4 grid gap-3">
-              {dominant.map((dim) => (
-                <IntelligenceCard
-                  key={dim.id}
-                  name={dim.name}
-                  description={dim.description}
-                  score={dim.score}
-                  accent={dim.accent}
-                />
-              ))}
-            </div>
-          </div>
-        </aside>
+        <div className="grid gap-4">
+          {careerRecommendations.map((career, i) => (
+            <AiCareerCard key={career.id} rank={i + 1} career={career} />
+          ))}
+        </div>
       </section>
 
-      <section className="mt-12">
-        <div className="card p-6 sm:p-8">
-          <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900">Actionable next steps</h2>
-              <p className="mt-1 text-sm text-slate-600">A short plan to keep momentum after reading your report.</p>
-            </div>
-            <span className="badge bg-slate-100 text-slate-700">{nextSteps.length} suggestions</span>
+      <section className="ai-panel p-6 sm:p-8">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-900">AI-suggested next steps</h2>
+            <p className="mt-1 text-sm text-slate-600">Personalized action plan from your report.</p>
           </div>
-
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {nextSteps.map((step, index) => (
-              <div key={step.title} className="flex items-start gap-4 rounded-xl border border-slate-200 bg-slate-50/40 p-5">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-sm font-semibold text-white">
-                  {index + 1}
-                </span>
-                <div>
-                  <h3 className="text-sm font-semibold text-slate-900">{step.title}</h3>
-                  <p className="mt-1 text-sm text-slate-600">{step.description}</p>
-                </div>
+          <AiBadge label={`${nextSteps.length} steps`} />
+        </div>
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          {nextSteps.map((step, i) => (
+            <div key={step.title} className="flex items-start gap-4 rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50/80 to-violet-50/40 p-5">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-sm font-semibold text-white">{i + 1}</span>
+              <div>
+                <h3 className="text-sm font-semibold text-slate-900">{step.title}</h3>
+                <p className="mt-1 text-sm text-slate-600">{step.description}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </section>
     </div>
