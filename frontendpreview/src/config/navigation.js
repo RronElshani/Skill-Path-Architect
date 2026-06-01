@@ -1,16 +1,17 @@
-export const publicNavItems = [
+export const mainNavItems = [
   { to: '/', label: 'Home', end: true },
-  { to: '/dashboard', label: 'Dashboard' },
+  { to: '/dashboard', label: 'Dashboard', end: true },
   { to: '/assessment', label: 'Assessment' },
   { to: '/results', label: 'Results' },
   { to: '/profile', label: 'Profile' }
 ]
 
-export const appNavItems = [
-  { to: '/dashboard', label: 'Overview', end: true },
-  { to: '/assessment', label: 'Assessment' },
-  { to: '/results', label: 'Results' },
-  { to: '/profile', label: 'Profile' },
+/** @deprecated use mainNavItems */
+export const publicNavItems = mainNavItems
+
+/** Sidebar-only extras (not duplicated in the top navbar) */
+export const sidebarNavItems = [
+  ...mainNavItems,
   { to: '/admin/users', label: 'Admin Users' }
 ]
 

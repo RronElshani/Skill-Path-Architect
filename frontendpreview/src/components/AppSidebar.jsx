@@ -1,8 +1,13 @@
 import { NavLink } from 'react-router-dom'
-import { appNavItems, sidebarLinkClass } from '../config/navigation.js'
+import { sidebarNavItems, sidebarLinkClass } from '../config/navigation.js'
 import { currentUser } from '../services/users.js'
 
 const icons = {
+  '/': (
+    <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z" />
+    </svg>
+  ),
   '/dashboard': (
     <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="3" width="7" height="9" rx="1.5" />
@@ -39,7 +44,7 @@ const icons = {
   )
 }
 
-function SidebarContent({ onNavigate }) {
+export default function AppSidebar() {
   const initials = currentUser.name
     .split(' ')
     .map((part) => part[0])
@@ -47,7 +52,7 @@ function SidebarContent({ onNavigate }) {
     .join('')
 
   return (
-    <>
+    <aside className="card sticky top-20 hidden h-fit p-5 lg:block" aria-label="Sidebar">
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-600 text-sm font-semibold text-white">
           {initials}
@@ -58,13 +63,12 @@ function SidebarContent({ onNavigate }) {
         </div>
       </div>
 
-      <nav className="mt-6 flex flex-col gap-1 lg:hidden" aria-label="App navigation">
-        {appNavItems.map((item) => (
+      <nav className="mt-6 flex flex-col gap-1" aria-label="Secondary navigation">
+        {sidebarNavItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             end={item.end}
-            onClick={onNavigate}
             className={({ isActive }) => sidebarLinkClass(isActive)}
           >
             <span className="text-current">{icons[item.to]}</span>
@@ -79,32 +83,6 @@ function SidebarContent({ onNavigate }) {
           Retake the assessment each semester to track how your strengths evolve.
         </p>
       </div>
-    </>
-  )
-}
-
-export default function AppSidebar({ open = false, onClose }) {
-  return (
-    <>
-      <button
-        type="button"
-        className={`fixed inset-0 top-16 z-40 bg-slate-900/40 transition-opacity duration-200 lg:hidden ${
-          open ? 'opacity-100' : 'pointer-events-none opacity-0'
-        }`}
-        aria-label="Close navigation"
-        aria-hidden={!open}
-        tabIndex={open ? 0 : -1}
-        onClick={onClose}
-      />
-
-      <aside
-        className={`card fixed bottom-0 left-0 top-16 z-50 flex w-[min(100%,280px)] flex-col overflow-y-auto p-5 transition-transform duration-200 ease-out lg:static lg:z-auto lg:h-fit lg:w-auto lg:translate-x-0 lg:overflow-visible lg:sticky lg:top-20 ${
-          open ? 'translate-x-0' : '-translate-x-full pointer-events-none lg:pointer-events-auto'
-        }`}
-        aria-label="Sidebar"
-      >
-        <SidebarContent onNavigate={onClose} />
-      </aside>
-    </>
+    </aside>
   )
 }
