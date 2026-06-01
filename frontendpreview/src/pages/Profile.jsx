@@ -11,8 +11,7 @@ export default function Profile() {
     .filter(Boolean)
 
   return (
-    <div className="container-page py-12 lg:py-16">
-      <div className="grid gap-8 lg:grid-cols-12">
+    <div className="grid gap-8 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <ProfileCard
             name={currentUser.name}
@@ -89,7 +88,6 @@ export default function Profile() {
               ))}
             </div>
           </section>
-        </div>
       </div>
     </div>
   )

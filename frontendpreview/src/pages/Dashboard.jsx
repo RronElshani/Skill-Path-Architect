@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import DashboardSidebar from '../components/DashboardSidebar.jsx'
 import DashboardStats from '../components/DashboardStats.jsx'
 import IntelligenceCard from '../components/IntelligenceCard.jsx'
 import CareerCard from '../components/CareerCard.jsx'
@@ -30,11 +29,7 @@ export default function Dashboard() {
   const topThreeCareers = careerRecommendations.slice(0, 3)
 
   return (
-    <div className="container-page py-10 lg:py-14">
-      <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
-        <DashboardSidebar name={currentUser.name} role={currentUser.role} />
-
-        <div className="space-y-8">
+    <div className="space-y-8">
           <section className="card relative overflow-hidden bg-gradient-to-r from-white to-brand-50/60 p-6 sm:p-8">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
               <div>
@@ -164,8 +159,6 @@ export default function Dashboard() {
               </ul>
             </div>
           </section>
-        </div>
-      </div>
     </div>
   )
 }

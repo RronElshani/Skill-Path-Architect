@@ -15,7 +15,7 @@ export default function Results() {
   const dominant = [...intelligenceDimensions].sort((a, b) => b.score - a.score).slice(0, 4)
 
   return (
-    <div className="container-page py-12 lg:py-16">
+    <>
       <div className="grid items-end gap-6 lg:grid-cols-12">
         <div className="lg:col-span-8">
           <SectionTitle
@@ -120,6 +120,6 @@ export default function Results() {
           </div>
         </div>
       </section>
-    </div>
+    </>
   )
 }
