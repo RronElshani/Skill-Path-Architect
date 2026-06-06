@@ -7,6 +7,10 @@ const router = Router()
 // All user routes require authentication
 router.use(authenticate)
 
+// User assessment routes
+router.post('/assessment', userController.saveAssessment)
+router.get('/assessment', userController.getAssessment)
+
 // Admin-only routes
 router.get('/', authorize('admin'), userController.getAllUsers)
 router.get('/:id', authorize('admin'), userController.getUserById)

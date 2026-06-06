@@ -5,7 +5,8 @@ import CareerCard from '../components/CareerCard.jsx'
 import SummaryCard from '../components/SummaryCard.jsx'
 import { intelligenceDimensions, progressMilestones } from '../services/intelligenceScores.js'
 import { careerRecommendations, personalizedSummary } from '../services/careerRecommendations.js'
-import { currentUser, recentActivity } from '../services/users.js'
+import { recentActivity } from '../services/users.js'
+import { useAuth } from '../context/AuthContext.jsx'
 
 const stats = [
   { label: 'Assessment progress', value: '78%', helper: 'Three of four milestones complete', change: '+12%', trend: 'up' },
@@ -22,6 +23,7 @@ const toneMap = {
 }
 
 export default function Dashboard() {
+  const { user } = useAuth()
   const topThreeIntelligences = [...intelligenceDimensions]
     .sort((a, b) => b.score - a.score)
     .slice(0, 3)
@@ -35,7 +37,7 @@ export default function Dashboard() {
               <div>
                 <span className="badge bg-brand-50 text-brand-700">Welcome back</span>
                 <h1 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-                  Hello, {currentUser.name.split(' ')[0]}.
+                  Hello, {user?.name ? user.name.split(' ')[0] : 'Student'}.
                 </h1>
                 <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
                   Your latest report is ready. Review your dominant intelligences, revisit recommended careers and continue refining your direction.

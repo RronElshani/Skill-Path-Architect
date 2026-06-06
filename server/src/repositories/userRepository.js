@@ -45,6 +45,14 @@ const userRepository = {
     })
   },
 
+  async updateAssessment(id, assessment) {
+    return await User.findByIdAndUpdate(
+      id,
+      { assessment },
+      { new: true, runValidators: true }
+    )
+  },
+
   async deleteById(id) {
     return await User.findByIdAndDelete(id)
   },

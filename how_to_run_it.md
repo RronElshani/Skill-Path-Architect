@@ -1,63 +1,109 @@
 # How to Run - Skill Path Architect
 
-This project integrates a machine learning prediction pipeline with a premium Vite-based React frontend to deliver real-time career recommendations.
+This project integrates a machine learning prediction pipeline, a Node.js Express server backend, and a premium Vite-based React frontend to deliver real-time career recommendations.
 
 ---
 
-## 📦 Prerequisites: Python Environment (Conda)
+## 📦 Prerequisites
 
-This project requires a Python environment with Conda/Miniconda installed to manage packages and run the predictions model.
+Before starting, ensure you have the following installed on your machine:
 
-1. **Install Conda**: If you don't have it, download and install [Miniconda](https://docs.anaconda.com/miniconda/) or [Anaconda](https://www.anaconda.com/download).
-2. **Open Command Prompt / Terminal**: Make sure your terminal has active conda access (e.g., Anaconda Prompt or configured shell).
-3. **Install python packages**: Run the following command from the root directory to install the required dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+1. **Node.js** (v20 or newer)
+2. **MongoDB** (running locally, or a MongoDB Atlas connection URI)
+3. **Python** (v3.10 or newer) with `pip` (standard system Python, or managed via `conda` / `venv`)
+
+---
+
+## 🔧 Installation & Setup
+
+You need to install dependencies for all three layers of the project and configure the server's environment variables.
+
+### 1. Install Dependencies
+Run the following commands from the root directory of the project:
+
+```bash
+# 1. Install root concurrent runner dependency
+npm install
+
+# 2. Install Express backend dependencies
+cd server && npm install
+
+# 3. Install Vite React frontend dependencies
+cd ../frontend && npm install
+
+# 4. Install Python prediction API dependencies
+cd ..
+pip install -r requirements.txt
+```
+
+### 2. Configure Environment Variables
+Navigate to the `server` directory, duplicate the environment template, and set up your variables:
+
+```bash
+cd server
+cp .env.example .env
+```
+Open the newly created `.env` file and verify or modify:
+- `MONGODB_URI`: The connection string to your MongoDB instance.
+- `PORT`: Set to `5004` (default) where the Express API will run.
+- `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET`: Private keys for authentication.
 
 ---
 
 ## 🚀 Recommended: Run All Concurrently (Single Command)
 
-For convenience, we have integrated the `concurrently` runner package into the root workspace folder to launch both the frontend dev server and python API backend simultaneously in one terminal window.
+We have integrated a concurrent workspace runner. You can spin up all three servers simultaneously inside a single terminal window.
 
-1. Install dependencies in the root directory (only needs to be done once):
-   ```bash
-   npm install
-   ```
-2. Start both services concurrently:
-   ```bash
-   npm run dev
-   ```
-   *This starts both the Flask backend on port `5001` and the Vite React frontend dev server on port `5173` concurrently. Their output logs will be color-coded and piped into the same terminal window.*
+From the root directory:
+```bash
+npm run dev
+```
+
+This starts:
+1. **Python Flask API** (`dev:ai`) on port `5001` (http://localhost:5001)
+2. **Node.js Express Server** (`dev:server`) on port `5004` (http://localhost:5004)
+3. **Vite React Frontend** (`dev:frontend`) on port `5173` (http://localhost:5173)
+
+*All output logs are color-coded, labeled, and piped into this single terminal window.*
 
 ---
 
 ## 🛠️ Manual Launch (Separate Terminal Windows)
 
-If you prefer to start each service individually, open two separate terminal windows:
+If you prefer to start each service individually, open three separate terminal windows:
 
 ### Terminal 1: Python Flask Prediction API
 1. Navigate to the `ai` directory:
-   ```powershell
+   ```bash
    cd ai
    ```
-2. Start the API server:
-   ```powershell
+2. Start the Flask server:
+   ```bash
    python app.py
    ```
-   *The server will boot on port `5001` (http://localhost:5001) and load the XGBoost model, label encoder, and feature scaler at startup.*
+   *The server runs on port `5001` (http://localhost:5001) and loads the XGBoost model, label encoder, and feature scaler at startup.*
 
-### Terminal 2: Vite React Frontend
-1. Navigate to the `frontendpreview` directory:
-   ```powershell
-   cd frontendpreview
+### Terminal 2: Node.js Express Server
+1. Navigate to the `server` directory:
+   ```bash
+   cd server
    ```
-2. Start the Vite dev server:
-   ```powershell
+2. Start the Express dev server:
+   ```bash
    npm run dev
    ```
-   *The frontend preview will run at http://localhost:5173.*
+   *The backend runs on port `5004` (http://localhost:5004), handles authentication, saves assessments, and acts as a gateway to the AI Flask server.*
+
+### Terminal 3: Vite React Frontend
+1. Navigate to the `frontend` directory:
+   ```bash
+   cd frontend
+   ```
+2. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+   *The client runs at http://localhost:5173.*
 
 ---
 
@@ -76,3 +122,4 @@ To create a natural and readable dashboard layout in the UI:
 2. The remaining 4 predictions decay smoothly relative to their proximity to the top class's probability:
    $$\text{Match Score}_i = \text{Top Display} - (4 \times i) - \left(12 \times \left(1.0 - \frac{P_i}{P_0}\right)\right)$$
 3. This produces a realistic, well-balanced distribution list (e.g., 94.5%, 78.2%, 73.1%...) while strictly preserving the model's relative rank and classification.
+
