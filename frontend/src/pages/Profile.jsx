@@ -2,24 +2,46 @@ import { Link } from 'react-router-dom'
 import ProfileCard from '../components/ProfileCard.jsx'
 import SectionTitle from '../components/SectionTitle.jsx'
 import CareerCard from '../components/CareerCard.jsx'
-import { currentUser } from '../services/users.js'
 import { careerRecommendations } from '../services/careerRecommendations.js'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Profile() {
-  const saved = currentUser.savedRecommendations
-    .map((entry) => careerRecommendations.find((career) => career.id === entry.id))
+  const { user, logout } = useAuth()
+
+  if (!user) return null
+
+  // Fallbacks for profile fields not yet fully saved in database
+  const joinedDate = user.createdAt 
+    ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    : 'June 2026'
+
+  const userRole = user.role.charAt(0).toUpperCase() + user.role.slice(1)
+
+  const saved = (user.savedRecommendations || [
+    { id: 'computer-programmer', name: 'Computer programmer', confidence: 94 },
+    { id: 'database-designer', name: 'Database designer', confidence: 88 },
+    { id: 'computer-analyst', name: 'Computer analyst', confidence: 79 }
+  ])
+    .map((entry) => careerRecommendations.find((career) => career.id === entry.id || career.name === entry.name))
     .filter(Boolean)
+
+  const strengths = user.strengths || [
+    'Structured analytical reasoning',
+    'Strong visual and spatial pattern recognition',
+    'Independent learning and reflection',
+    'Clear written communication'
+  ]
 
   return (
     <div className="grid gap-8 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <ProfileCard
-            name={currentUser.name}
-            email={currentUser.email}
-            role={currentUser.role}
-            joined={currentUser.joined}
-            location={currentUser.location}
-            headline={currentUser.headline}
+            name={user.name}
+            email={user.email}
+            role={userRole}
+            joined={joinedDate}
+            location="Pristina, Kosovo"
+            headline="Aspiring professional exploring career paths"
           />
 
           <div className="mt-6 card p-6">
@@ -41,6 +63,15 @@ export default function Profile() {
                 <span className="text-slate-700">Data export</span>
                 <Link to="/profile" className="text-sm font-medium text-brand-700 hover:text-brand-800">Request</Link>
               </li>
+              <li className="flex items-center justify-between border-t border-slate-100 pt-3">
+                <span className="text-slate-700 font-semibold">Session</span>
+                <button
+                  onClick={logout}
+                  className="text-sm font-semibold text-red-600 hover:text-red-700 transition-colors"
+                >
+                  Sign out
+                </button>
+              </li>
             </ul>
           </div>
         </div>
@@ -54,7 +85,7 @@ export default function Profile() {
             />
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {currentUser.strengths.map((strength, index) => (
+              {strengths.map((strength, index) => (
                 <div key={strength} className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/50 p-4">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-sm font-semibold text-white">
                     {index + 1}
@@ -75,17 +106,23 @@ export default function Profile() {
             </div>
 
             <div className="mt-5 grid gap-4">
-              {saved.map((career, index) => (
-                <CareerCard
-                  key={career.id}
-                  rank={index + 1}
-                  name={career.name}
-                  confidence={career.confidence}
-                  summary={career.summary}
-                  intelligences={career.intelligences}
-                  outlook={career.outlook}
-                />
-              ))}
+              {saved.length > 0 ? (
+                saved.map((career, index) => (
+                  <CareerCard
+                    key={career.id}
+                    rank={index + 1}
+                    name={career.name}
+                    confidence={career.confidence}
+                    summary={career.summary}
+                    intelligences={career.intelligences}
+                    outlook={career.outlook}
+                  />
+                ))
+              ) : (
+                <div className="card p-6 text-center text-slate-500">
+                  No saved careers yet. Fill out the assessment to view matches.
+                </div>
+              )}
             </div>
           </section>
       </div>

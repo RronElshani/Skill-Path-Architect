@@ -37,6 +37,86 @@ const userService = {
     }
     return user
   },
+
+  async saveAssessment(userId, rawScores) {
+    const dimensions = [
+      'language_skills',
+      'math_and_logic',
+      'spatial_awareness',
+      'physical_prowess',
+      'musical_ability',
+      'collaboration_skills',
+      'self_awareness',
+      'sustainability_focus'
+    ]
+    for (const dim of dimensions) {
+      if (rawScores[dim] === undefined) {
+        const error = new Error(`Missing value for dimension: ${dim}`)
+        error.statusCode = 400
+        throw error
+      }
+    }
+
+    const preprocessedPayload = {
+      language_skills: (rawScores.language_skills - 1.0) * 5.0,
+      musical_ability: (rawScores.musical_ability - 1.0) * 5.0,
+      physical_prowess: (rawScores.physical_prowess - 1.0) * 5.0,
+      math_and_logic: (rawScores.math_and_logic - 1.0) * 5.0,
+      spatial_awareness: (rawScores.spatial_awareness - 1.0) * 5.0,
+      collaboration_skills: (rawScores.collaboration_skills - 1.0) * 5.0,
+      self_awareness: (rawScores.self_awareness - 1.0) * 5.0,
+      sustainability_focus: (rawScores.sustainability_focus - 1.0) * 5.0,
+      is_preprocessed: true
+    }
+
+    let predictions = []
+    try {
+      const response = await fetch('http://localhost:5001/api/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(preprocessedPayload)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        const error = new Error(errorData.error || 'AI service prediction failed')
+        error.statusCode = response.status
+        throw error
+      }
+
+      const data = await response.json()
+      predictions = data.predictions
+    } catch (err) {
+      const error = new Error(`Failed to connect to AI service: ${err.message}`)
+      error.statusCode = 502
+      throw error
+    }
+
+    const assessment = {
+      scores: rawScores,
+      predictions,
+      completedAt: new Date()
+    }
+
+    const user = await userRepository.updateAssessment(userId, assessment)
+    if (!user) {
+      const error = new Error('User not found')
+      error.statusCode = 404
+      throw error
+    }
+
+    return user.assessment
+  },
+
+  async getAssessment(userId) {
+    const user = await userRepository.findById(userId)
+    if (!user) {
+      const error = new Error('User not found')
+      error.statusCode = 404
+      throw error
+    }
+    return user.assessment || null
+  },
 }
 
 export default userService

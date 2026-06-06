@@ -78,7 +78,7 @@ AI-Guidance-Counselor/
 │   ├── dataset_exploration.ipynb  # Full ML pipeline (XGBoost)
 │   └── README.md                  # AI module documentation
 │
-├── client/                        # Frontend (React + Vite + Tailwind)
+├── frontend/                      # Frontend (React + Vite + Tailwind)
 │   ├── src/
 │   │   ├── components/            # Reusable UI components
 │   │   ├── pages/                 # Page components (Home, Login, Register, Dashboard)
@@ -125,40 +125,46 @@ cd AI-Guidance-Counselor
 
 ### 2. Install Dependencies
 
+Install root and workspace dependencies:
 ```bash
-# Frontend
-cd client && npm install
+# Install root dependencies
+npm install
 
-# Backend
-cd ../server && npm install
+# Install server dependencies
+cd server && npm install
 
-# AI module (optional — only needed to re-train the model)
-pip install pandas numpy xgboost scikit-learn jupyter
+# Install frontend dependencies
+cd ../frontend && npm install
+
+# Install AI prediction package requirements
+pip install -r requirements.txt
 ```
 
 ### 3. Configure Environment
 
+Create the Express backend environment file:
 ```bash
 cd server
 cp .env.example .env
-# Edit .env with your MongoDB URI and JWT secrets
+# Edit .env with your local MongoDB URI and details.
+# Secure JWT secrets will be auto-generated or can be filled in manually.
 ```
 
-### 4. Start the Backend
+### 4. Start the Application
 
+#### Recommended: Start All Concurrently
+From the root directory:
 ```bash
-cd server
 npm run dev
 ```
+*This starts the Flask AI backend (port 5001), Express Node.js server (port 5004), and Vite React frontend (port 5173) concurrently in a single terminal.*
 
-### 5. Start the Frontend (new terminal)
+#### Manual Launch (Separate Terminals)
+- **AI Flask API**: `python ai/app.py` (running on http://localhost:5001)
+- **Express Backend**: `npm run dev --prefix server` (running on http://localhost:5004)
+- **Vite React Client**: `npm run dev --prefix frontend` (running on http://localhost:5173)
 
-```bash
-cd client
-npm run dev
-```
-
-### 6. Open in Browser
+### 5. Open in Browser
 
 Navigate to **`http://localhost:5173`**
 
@@ -176,7 +182,14 @@ Navigate to **`http://localhost:5173`**
 | POST | `/logout` | Yes | Logout (clear refresh token) |
 | GET | `/me` | Yes | Get current authenticated user |
 
-### Users (`/api/users`) — Admin Only
+### User Assessments (`/api/users/assessment`)
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| POST | `/assessment` | Yes | Submit scores, retrieve predictions from Flask, and save results in MongoDB |
+| GET | `/assessment` | Yes | Retrieve the logged-in user's saved scores and predictions |
+
+### Admin User Management (`/api/users`) — Admin Only
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|

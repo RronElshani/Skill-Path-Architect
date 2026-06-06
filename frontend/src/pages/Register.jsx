@@ -1,8 +1,44 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import Input from '../components/Input.jsx'
 import Button from '../components/Button.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Register() {
+  const { register } = useAuth()
+  const navigate = useNavigate()
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError(null)
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long')
+      return
+    }
+
+    setLoading(true)
+    try {
+      await register(name, email, password)
+      navigate('/dashboard')
+    } catch (err) {
+      setError(err.message || 'Registration failed. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <section className="flex items-center justify-center bg-white px-6 py-12 sm:px-10">
@@ -26,13 +62,21 @@ export default function Register() {
             </p>
           </div>
 
-          <form className="mt-8 space-y-5" onSubmit={(e) => e.preventDefault()}>
+          {error && (
+            <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-3.5 text-sm text-red-700">
+              {error}
+            </div>
+          )}
+
+          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
             <Input
               id="fullName"
               label="Full name"
               type="text"
               placeholder="Adelina Krasniqi"
               autoComplete="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               required
             />
             <Input
@@ -41,6 +85,8 @@ export default function Register() {
               type="email"
               placeholder="name@university.edu"
               autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
             <Input
@@ -50,6 +96,8 @@ export default function Register() {
               placeholder="At least 8 characters"
               autoComplete="new-password"
               hint="Use a mix of letters, numbers and symbols."
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
             <Input
@@ -58,18 +106,20 @@ export default function Register() {
               type="password"
               placeholder="Repeat your password"
               autoComplete="new-password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
 
             <label className="flex items-start gap-2.5 text-sm text-slate-600">
-              <input type="checkbox" className="mt-1 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
+              <input type="checkbox" className="mt-1 h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" required />
               <span>
                 I agree to the academic terms of use and understand this platform is presented for educational demonstration.
               </span>
             </label>
 
-            <Button type="submit" fullWidth>
-              Create account
+            <Button type="submit" fullWidth disabled={loading}>
+              {loading ? 'Creating account...' : 'Create account'}
             </Button>
           </form>
 

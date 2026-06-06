@@ -53,6 +53,31 @@ const userController = {
       next(error)
     }
   },
+
+  async saveAssessment(req, res, next) {
+    try {
+      const assessment = await userService.saveAssessment(req.user.id, req.body)
+      res.status(200).json({
+        success: true,
+        message: 'Assessment saved successfully',
+        data: assessment,
+      })
+    } catch (error) {
+      next(error)
+    }
+  },
+
+  async getAssessment(req, res, next) {
+    try {
+      const assessment = await userService.getAssessment(req.user.id)
+      res.status(200).json({
+        success: true,
+        data: assessment,
+      })
+    } catch (error) {
+      next(error)
+    }
+  },
 }
 
 export default userController

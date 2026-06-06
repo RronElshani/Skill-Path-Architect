@@ -32,6 +32,26 @@ const userSchema = new mongoose.Schema(
       type: String,
       select: false,
     },
+    assessment: {
+      scores: {
+        language_skills: { type: Number, default: 3.0 },
+        math_and_logic: { type: Number, default: 3.0 },
+        spatial_awareness: { type: Number, default: 3.0 },
+        physical_prowess: { type: Number, default: 3.0 },
+        musical_ability: { type: Number, default: 3.0 },
+        collaboration_skills: { type: Number, default: 3.0 },
+        self_awareness: { type: Number, default: 3.0 },
+        sustainability_focus: { type: Number, default: 3.0 },
+      },
+      predictions: [
+        {
+          rank: Number,
+          career: String,
+          confidence: Number,
+        }
+      ],
+      completedAt: { type: Date }
+    },
   },
   {
     timestamps: true,

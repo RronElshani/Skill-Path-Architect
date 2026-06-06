@@ -4,9 +4,10 @@
   "description": "Skill Path Architect root concurrent runner",
   "main": "index.js",
   "scripts": {
-    "dev:backend": "python ai/app.py",
-    "dev:frontend": "npm run dev --prefix frontendpreview",
-    "dev": "concurrently --kill-others \"npm run dev:backend\" \"npm run dev:frontend\""
+    "dev:ai": "python ai/app.py",
+    "dev:server": "npm run dev --prefix server",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev": "concurrently --kill-others \"npm run dev:ai\" \"npm run dev:server\" \"npm run dev:frontend\""
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

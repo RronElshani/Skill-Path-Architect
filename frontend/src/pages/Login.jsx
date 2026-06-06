@@ -1,8 +1,31 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import Input from '../components/Input.jsx'
 import Button from '../components/Button.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Login() {
+  const { login } = useAuth()
+  const navigate = useNavigate()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+    try {
+      await login(email, password)
+      navigate('/dashboard')
+    } catch (err) {
+      setError(err.message || 'Login failed. Please check your credentials.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <aside className="relative hidden bg-gradient-to-br from-brand-700 to-brand-900 p-12 text-white lg:flex lg:flex-col lg:justify-between">
@@ -60,13 +83,21 @@ export default function Login() {
             </p>
           </div>
 
-          <form className="mt-8 space-y-5" onSubmit={(e) => e.preventDefault()}>
+          {error && (
+            <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-3.5 text-sm text-red-700">
+              {error}
+            </div>
+          )}
+
+          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
             <Input
               id="email"
               label="University email"
               type="email"
               placeholder="name@university.edu"
               autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
             <Input
@@ -75,6 +106,8 @@ export default function Login() {
               type="password"
               placeholder="Enter your password"
               autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
 
@@ -88,8 +121,8 @@ export default function Login() {
               </Link>
             </div>
 
-            <Button type="submit" fullWidth>
-              Sign in
+            <Button type="submit" fullWidth disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign in'}
             </Button>
           </form>
 
