@@ -3,7 +3,6 @@ import AiBadge from './AiBadge.jsx'
 
 export default function AiResultsHero({ report, topMatch }) {
   const firstName = report.studentName.split(' ')[0]
-  console.log(firstName)
   return (
     <section className="ai-panel-dark p-6 sm:p-8">
       <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-violet-500/20 blur-3xl" />
