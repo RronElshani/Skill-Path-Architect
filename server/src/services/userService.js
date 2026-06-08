@@ -92,9 +92,28 @@ const userService = {
       throw error
     }
 
+    let summary = null
+    try {
+      const summaryResponse = await fetch('http://localhost:5001/api/summary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ predictions, scores: rawScores })
+      })
+
+      if (summaryResponse.ok) {
+        const summaryData = await summaryResponse.json()
+        summary = summaryData.summary
+      } else {
+        console.error('Failed to generate summary from AI service:', await summaryResponse.text())
+      }
+    } catch (err) {
+      console.error(`Failed to connect to AI summary service: ${err.message}`)
+    }
+
     const assessment = {
       scores: rawScores,
       predictions,
+      summary,
       completedAt: new Date()
     }
 

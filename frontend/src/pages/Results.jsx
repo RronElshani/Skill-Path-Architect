@@ -52,8 +52,13 @@ export default function Results() {
       return
     }
 
-    const { scores, predictions, timestamp } = stored
+    const { scores, predictions, timestamp, summary } = stored
     if (!scores || !Array.isArray(predictions) || predictions.length === 0) return
+
+    if (summary) {
+      setLlmBody(summary)
+      return
+    }
 
     const cached = loadCachedSummary(timestamp)
     if (cached) {
