@@ -50,6 +50,7 @@ const userSchema = new mongoose.Schema(
           confidence: Number,
         }
       ],
+      summary: { type: String },
       completedAt: { type: Date }
     },
   },

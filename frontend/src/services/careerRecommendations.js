@@ -435,6 +435,7 @@ export function loadPredictions(userAssessment, showSample = false) {
       data = {
         scores: userAssessment.scores,
         predictions: userAssessment.predictions,
+        summary: userAssessment.summary,
         timestamp: userAssessment.completedAt || new Date().toISOString(),
         studentName: userAssessment.name || 'Student Profile'
       }
@@ -591,7 +592,7 @@ export function loadPredictions(userAssessment, showSample = false) {
     const secondStr = dominant[1]
     Object.assign(personalizedSummary, {
       title: 'AI-generated career insight',
-      body: `Your profile reveals a learner who excels in ${firstStr} and ${secondStr}. You combine these cognitive strengths to process information systematically and construct solutions. This positions you well for careers that leverage these dimensions.`,
+      body: data.summary || `Your profile reveals a learner who excels in ${firstStr} and ${secondStr}. You combine these cognitive strengths to process information systematically and construct solutions. This positions you well for careers that leverage these dimensions.`,
       highlights: [
         `${firstStr} is your primary strength, providing a solid foundation for analysis and structural reasoning.`,
         `Your strong alignment with ${secondStr} helps you visualize patterns and organize projects effectively.`,

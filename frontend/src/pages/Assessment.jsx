@@ -80,6 +80,7 @@ export default function Assessment() {
     try {
       let predictions = []
       let timestamp = new Date().toISOString()
+      let summary = undefined
 
       if (user) {
         const token = localStorage.getItem('accessToken')
@@ -100,6 +101,7 @@ export default function Assessment() {
         const resData = await response.json()
         predictions = resData.data.predictions
         timestamp = resData.data.completedAt
+        summary = resData.data.summary
 
         // Update context state
         updateUser({ assessment: resData.data })
@@ -125,6 +127,7 @@ export default function Assessment() {
       localStorage.setItem('career_predictions', JSON.stringify({
         scores,
         predictions,
+        summary,
         timestamp
       }))
 
