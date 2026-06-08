@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import AiResultsHero from '../components/ai/AiResultsHero.jsx'
 import IntelligenceRadarChart from '../components/ai/IntelligenceRadarChart.jsx'
 import AiSummaryPanel from '../components/ai/AiSummaryPanel.jsx'
@@ -7,10 +7,24 @@ import AiCareerCard from '../components/ai/AiCareerCard.jsx'
 import AiBadge from '../components/ai/AiBadge.jsx'
 import ReviewCard from '../components/ReviewCard.jsx'
 import { loadPredictions, assessmentReport, careerRecommendations, radarSnapshot, personalizedSummary, nextSteps } from '../services/careerRecommendations.js'
+import { loadScores } from '../services/intelligenceScores.js'
 import { fetchLlmSummary, loadCachedSummary, saveCachedSummary } from '../services/aiSummary.js'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Results() {
-  loadPredictions()
+  const { user } = useAuth()
+  const [searchParams] = useSearchParams()
+  const showSample = searchParams.get('sample') === 'true'
+
+  // Dynamically load predictions and scores
+  loadPredictions(user?.assessment, showSample)
+  loadScores(user?.assessment, showSample, !!user)
+
+  // Track if we have summary reviewed
+  if (careerRecommendations.length > 0 && !showSample) {
+    localStorage.setItem('summary_reviewed', 'true')
+  }
+
   const topMatch = careerRecommendations[0]
 
   const [llmBody, setLlmBody] = useState(personalizedSummary.body)
@@ -18,6 +32,16 @@ export default function Results() {
   const [llmError, setLlmError] = useState(null)
 
   useEffect(() => {
+    // Dynamically update llmBody if personalizedSummary changes (e.g. after loadPredictions completes)
+    setLlmBody(personalizedSummary.body)
+  }, [personalizedSummary.body])
+
+  useEffect(() => {
+    if (showSample) {
+      setLlmBody(personalizedSummary.body)
+      return
+    }
+
     const raw = localStorage.getItem('career_predictions')
     if (!raw) return
 
@@ -58,10 +82,47 @@ export default function Results() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [showSample])
+
+  const hasResults = showSample || careerRecommendations.length > 0
+
+  if (!hasResults) {
+    return (
+      <div className="mx-auto max-w-md py-16 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-50 text-brand-600 mx-auto text-3xl">
+          📊
+        </div>
+        <h2 className="mt-5 text-2xl font-semibold text-slate-900">No assessment found</h2>
+        <p className="mt-3 text-sm text-slate-600">
+          You haven't completed your Howard Gardner Multiple Intelligences self-assessment yet.
+          Complete the assessment to generate your personalized career blueprint.
+        </p>
+        <div className="mt-8 flex justify-center gap-3">
+          <Link to="/assessment" className="btn-primary">
+            Begin assessment
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="ai-mesh -mx-4 space-y-8 rounded-2xl px-4 py-2 sm:-mx-6 sm:px-6">
+      {showSample && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50/80 backdrop-blur-sm p-4 text-sm text-amber-800">
+          <div className="flex items-center gap-2">
+            <span className="text-base">💡</span>
+            <span className="font-semibold">Demo Mode:</span> You are viewing a sample report for Adelina Krasniqi.
+          </div>
+          <p className="mt-1 ml-6 text-xs text-amber-700">
+            These recommendations do not reflect your own profile.
+            <Link to="/assessment" className="ml-1 font-semibold underline text-amber-900 hover:text-amber-950">
+              Take the assessment
+            </Link> to build your custom blueprint.
+          </p>
+        </div>
+      )}
+
       <AiResultsHero report={assessmentReport} topMatch={topMatch} />
 
       <section className="grid gap-6 lg:grid-cols-12">
@@ -98,7 +159,7 @@ export default function Results() {
               <h2 className="text-lg font-semibold text-slate-900">AI-ranked career matches</h2>
               <AiBadge label="Top 5" />
             </div>
-            <p className="mt-1 text-sm text-slate-600">XGBoost output ranked by profile alignment. Click for model reasoning.</p>
+            <p className="mt-1 text-sm text-slate-600">Output ranked by profile alignment. Click for model reasoning.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link to="/assessment" className="btn-ai-ghost">Retake</Link>
@@ -115,7 +176,7 @@ export default function Results() {
       <section className="ai-panel p-6 sm:p-8">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">AI-suggested next steps</h2>
+            <h2 className="text-lg font-semibold text-slate-900">Suggested next steps</h2>
             <p className="mt-1 text-sm text-slate-600">Personalized action plan from your report.</p>
           </div>
           <AiBadge label={`${nextSteps.length} steps`} />

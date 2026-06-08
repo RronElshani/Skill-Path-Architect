@@ -1,4 +1,7 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext.jsx'
+import { isCareerSaved, toggleSaveCareer } from '../../services/bookmarks.js'
 
 function confidenceStyle(c) {
   if (c >= 85) return { chip: 'from-emerald-500 to-teal-500', ring: 'ring-emerald-200' }
@@ -7,8 +10,17 @@ function confidenceStyle(c) {
 }
 
 export default function AiCareerCard({ rank, career }) {
+  const { user } = useAuth()
+  const [saved, setSaved] = useState(isCareerSaved(user?.id, career.id))
   const style = confidenceStyle(career.confidence)
   const gradId = `grad-${career.id}`
+
+  const handleBookmark = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const newSaved = toggleSaveCareer(user?.id, career.id)
+    setSaved(newSaved)
+  }
 
   return (
     <Link to={`/results/careers/${career.id}`} className={`ai-panel ai-panel-interactive group block p-5 transition ${style.ring} hover:ring-2`}>
@@ -16,7 +28,7 @@ export default function AiCareerCard({ rank, career }) {
         <div className="relative flex h-14 w-14 shrink-0 items-center justify-center">
           <svg className="absolute inset-0 -rotate-90" viewBox="0 0 56 56">
             <circle cx="28" cy="28" r="24" fill="none" stroke="#e0e7ff" strokeWidth="4" />
-            <circle cx="28" cy="28" r="24" fill="none" stroke={`url(#${gradId})`} strokeWidth="4" strokeLinecap="round" strokeDasharray={`${(career.confidence / 100) * 150.8} 150.8`} />
+            <circle cx="28" cy="28" r="24" fill="none" stroke={`url(#${gradId})`} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" strokeDasharray={`${(career.confidence / 100) * 150.8} 150.8`} />
             <defs>
               <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stopColor="#6366f1" /><stop offset="100%" stopColor="#8b5cf6" />
@@ -31,14 +43,23 @@ export default function AiCareerCard({ rank, career }) {
               <span className="text-xs font-semibold uppercase tracking-wider text-indigo-400">#{String(rank).padStart(2, '0')}</span>
               <h3 className="text-lg font-semibold text-slate-900 group-hover:ai-gradient-text">{career.name}</h3>
             </div>
-            <span className={`rounded-full bg-gradient-to-r ${style.chip} px-2.5 py-0.5 text-xs font-semibold text-white`}>AI match</span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleBookmark}
+                className={`flex h-8 w-8 items-center justify-center rounded-lg border transition ${saved
+                  ? 'border-indigo-200 bg-indigo-50 text-indigo-600'
+                  : 'border-slate-200 bg-white text-slate-400 hover:text-slate-600 hover:border-slate-300'
+                  }`}
+                title={saved ? 'Remove bookmark' : 'Bookmark career'}
+              >
+                <svg viewBox="0 0 24 24" className="h-4.5 w-4.5" fill={saved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                  <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+                </svg>
+              </button>
+            </div>
           </div>
           <p className="mt-2 text-sm text-slate-600 line-clamp-2">{career.summary}</p>
-          {career.aiReasoning && (
-            <p className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50/50 px-3 py-2 text-xs text-indigo-800">
-              <span className="font-semibold">Model: </span>{career.aiReasoning}
-            </p>
-          )}
           <p className="mt-3 text-sm font-medium text-indigo-600 opacity-0 transition group-hover:opacity-100">View AI breakdown →</p>
         </div>
       </div>

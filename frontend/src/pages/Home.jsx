@@ -149,8 +149,7 @@ const technologies = [
   { name: 'Vite', detail: 'Modern build tooling' },
   { name: 'Tailwind CSS', detail: 'Utility-first styling' },
   { name: 'React Router', detail: 'Client-side navigation' },
-  { name: 'Composable UI kit', detail: 'Reusable components' },
-  { name: 'Static mock data', detail: 'Presentational showcase' }
+  { name: 'Composable UI kit', detail: 'Reusable components' }
 ]
 
 export default function Home() {

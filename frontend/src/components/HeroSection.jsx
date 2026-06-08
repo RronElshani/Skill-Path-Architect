@@ -31,9 +31,6 @@ export default function HeroSection() {
             <Link to="/assessment" className="btn-primary px-6 py-3 text-base">
               Begin the assessment
             </Link>
-            <Link to="/results" className="btn-secondary px-6 py-3 text-base">
-              View a sample report
-            </Link>
           </div>
 
           <dl className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-4">
@@ -50,7 +47,7 @@ export default function HeroSection() {
           <div className="card relative p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Intelligence profile</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Demo / Example Profile</p>
                 <p className="mt-1 text-lg font-semibold text-slate-900">Adelina K.</p>
               </div>
               <span className="badge bg-emerald-50 text-emerald-700">Strong match</span>

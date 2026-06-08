@@ -3,17 +3,9 @@ import DashboardStats from '../components/DashboardStats.jsx'
 import IntelligenceCard from '../components/IntelligenceCard.jsx'
 import CareerCard from '../components/CareerCard.jsx'
 import SummaryCard from '../components/SummaryCard.jsx'
-import { intelligenceDimensions, progressMilestones } from '../services/intelligenceScores.js'
-import { careerRecommendations, personalizedSummary } from '../services/careerRecommendations.js'
-import { recentActivity } from '../services/users.js'
+import { intelligenceDimensions, progressMilestones, loadScores } from '../services/intelligenceScores.js'
+import { careerRecommendations, personalizedSummary, loadPredictions } from '../services/careerRecommendations.js'
 import { useAuth } from '../context/AuthContext.jsx'
-
-const stats = [
-  { label: 'Assessment progress', value: '78%', helper: 'Three of four milestones complete', change: '+12%', trend: 'up' },
-  { label: 'Top career match', value: '94%', helper: 'Software Engineer leads the list', change: 'New', trend: 'up' },
-  { label: 'Dimensions reviewed', value: '8 / 8', helper: 'All Gardner dimensions covered', change: 'Complete', trend: 'up' },
-  { label: 'Saved careers', value: '3', helper: 'Ready to share with an advisor', change: '+1', trend: 'up' }
-]
 
 const toneMap = {
   brand: 'bg-brand-50 text-brand-700',
@@ -24,11 +16,108 @@ const toneMap = {
 
 export default function Dashboard() {
   const { user } = useAuth()
+
+  // Dynamically load the user's predictions and scores
+  loadPredictions(user?.assessment)
+  loadScores(user?.assessment, false, !!user)
+
   const topThreeIntelligences = [...intelligenceDimensions]
     .sort((a, b) => b.score - a.score)
     .slice(0, 3)
 
   const topThreeCareers = careerRecommendations.slice(0, 3)
+
+  // Get bookmarked/saved careers from localStorage
+  const savedCareersKey = user ? `saved_careers_user_${user.id}` : 'saved_careers_guest'
+  const savedCareersRaw = localStorage.getItem(savedCareersKey)
+  const savedCareersList = savedCareersRaw ? JSON.parse(savedCareersRaw) : []
+  const savedCount = savedCareersList.length
+
+  // Calculate milestones
+  const isAssessmentFinished = !!(user?.assessment?.scores) || !!localStorage.getItem('career_predictions')
+  const isCareersGenerated = !!(user?.assessment?.predictions && user?.assessment?.predictions.length > 0) || !!localStorage.getItem('career_predictions')
+  const isSummaryReviewed = isCareersGenerated && (localStorage.getItem('summary_reviewed') === 'true')
+
+  // Milestones count
+  let milestonesCount = 1 // Profile completed is always true for logged in user
+  if (isAssessmentFinished) milestonesCount++
+  if (isCareersGenerated) milestonesCount++
+  if (isSummaryReviewed) milestonesCount++
+  const progressPercent = Math.round((milestonesCount / 4) * 100)
+
+  // Top career match
+  const topCareer = careerRecommendations[0]
+  const topCareerName = topCareer ? topCareer.name : 'None'
+  const topCareerConf = topCareer ? `${topCareer.confidence}%` : '0%'
+
+  // Dimensions reviewed
+  const dimensionsCount = isAssessmentFinished ? 8 : 0
+
+  const stats = [
+    { 
+      label: 'Assessment progress', 
+      value: `${progressPercent}%`, 
+      helper: `${milestonesCount} of 4 milestones complete`, 
+      change: isAssessmentFinished ? 'Complete' : 'Pending', 
+      trend: isAssessmentFinished ? 'up' : 'down' 
+    },
+    { 
+      label: 'Top career match', 
+      value: topCareerConf, 
+      helper: topCareer ? `${topCareerName} leads the list` : 'Take assessment to find matches', 
+      change: topCareer ? 'New' : 'None', 
+      trend: topCareer ? 'up' : 'down' 
+    },
+    { 
+      label: 'Dimensions reviewed', 
+      value: `${dimensionsCount} / 8`, 
+      helper: isAssessmentFinished ? 'All Gardner dimensions covered' : 'No dimensions assessed yet', 
+      change: isAssessmentFinished ? 'Complete' : 'Incomplete', 
+      trend: isAssessmentFinished ? 'up' : 'down' 
+    },
+    { 
+      label: 'Saved careers', 
+      value: String(savedCount), 
+      helper: savedCount > 0 ? 'Ready to share with an advisor' : 'Bookmark careers to view here', 
+      change: savedCount > 0 ? `+${savedCount}` : '0', 
+      trend: 'up' 
+    }
+  ]
+
+  const dynamicActivities = []
+  if (user) {
+    dynamicActivities.push({
+      id: 'act_reg',
+      label: 'Created account and set up profile',
+      timestamp: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Recently',
+      tone: 'slate'
+    })
+  }
+  if (isAssessmentFinished) {
+    const completedAtDate = user?.assessment?.completedAt 
+      ? new Date(user.assessment.completedAt).toLocaleDateString() 
+      : 'Recently'
+    dynamicActivities.push({
+      id: 'act_assess',
+      label: 'Completed Multiple Intelligences assessment',
+      timestamp: completedAtDate,
+      tone: 'brand'
+    })
+    dynamicActivities.push({
+      id: 'act_career',
+      label: `Generated AI career matches (Top match: ${topCareerName})`,
+      timestamp: completedAtDate,
+      tone: 'emerald'
+    })
+  }
+  if (savedCount > 0) {
+    dynamicActivities.push({
+      id: 'act_save',
+      label: `Bookmarked ${savedCount} career recommendation${savedCount > 1 ? 's' : ''}`,
+      timestamp: 'Recently',
+      tone: 'amber'
+    })
+  }
 
   return (
     <div className="space-y-8">
@@ -58,11 +147,11 @@ export default function Dashboard() {
                 <h2 className="text-lg font-semibold text-slate-900">Assessment progress</h2>
                 <p className="mt-1 text-sm text-slate-600">Track each milestone toward a complete career blueprint.</p>
               </div>
-              <span className="text-sm font-semibold text-slate-700">3 / 4 complete</span>
+              <span className="text-sm font-semibold text-slate-700">{milestonesCount} / 4 complete</span>
             </div>
 
             <div className="mt-5 h-2 w-full overflow-hidden rounded-full bg-slate-100">
-              <div className="h-full rounded-full bg-brand-600" style={{ width: '75%' }} />
+              <div className="h-full rounded-full bg-brand-600" style={{ width: `${progressPercent}%` }} />
             </div>
 
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -100,17 +189,23 @@ export default function Dashboard() {
               </div>
               <Link to="/results" className="text-sm font-medium text-brand-700 hover:text-brand-800">View all</Link>
             </div>
-            <div className="mt-5 grid gap-4 md:grid-cols-3">
-              {topThreeIntelligences.map((dim) => (
-                <IntelligenceCard
-                  key={dim.id}
-                  name={dim.name}
-                  description={dim.description}
-                  score={dim.score}
-                  accent={dim.accent}
-                />
-              ))}
-            </div>
+            {isAssessmentFinished ? (
+              <div className="mt-5 grid gap-4 md:grid-cols-3">
+                {topThreeIntelligences.map((dim) => (
+                  <IntelligenceCard
+                    key={dim.id}
+                    name={dim.name}
+                    description={dim.description}
+                    score={dim.score}
+                    accent={dim.accent}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="card mt-5 p-6 text-center text-slate-500">
+                No intelligence data available yet. Please complete the assessment.
+              </div>
+            )}
           </section>
 
           <section>
@@ -121,45 +216,72 @@ export default function Dashboard() {
               </div>
               <Link to="/results" className="text-sm font-medium text-brand-700 hover:text-brand-800">Full report</Link>
             </div>
-            <div className="mt-5 grid gap-4">
-              {topThreeCareers.map((career, index) => (
-                <CareerCard
-                  key={career.id}
-                  rank={index + 1}
-                  name={career.name}
-                  confidence={career.confidence}
-                  summary={career.summary}
-                  intelligences={career.intelligences}
-                  outlook={career.outlook}
-                />
-              ))}
-            </div>
+            {isAssessmentFinished ? (
+              <div className="mt-5 grid gap-4">
+                {topThreeCareers.map((career, index) => (
+                  <CareerCard
+                    key={career.id}
+                    rank={index + 1}
+                    name={career.name}
+                    confidence={career.confidence}
+                    summary={career.summary}
+                    intelligences={career.intelligences}
+                    outlook={career.outlook}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="card mt-5 p-6 text-center text-slate-500">
+                No career recommendations available. Please complete the assessment to find career matches.
+              </div>
+            )}
           </section>
 
           <section className="grid gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <SummaryCard
-                title="Personalized summary preview"
-                body={personalizedSummary.body}
-                highlights={personalizedSummary.highlights.slice(0, 3)}
-                footer="Generated from your latest assessment. Full report available in Results."
-              />
+              {isAssessmentFinished ? (
+                <SummaryCard
+                  title="Personalized summary preview"
+                  body={personalizedSummary.body}
+                  highlights={personalizedSummary.highlights.slice(0, 3)}
+                  footer="Generated from your latest assessment. Full report available in Results."
+                />
+              ) : (
+                <div className="card p-6 flex flex-col justify-between h-full min-h-[200px]">
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900">Personalized summary preview</h3>
+                    <p className="mt-3 text-sm text-slate-600">
+                      Your personalized summary will appear here once you take the Howard Gardner Multiple Intelligences assessment.
+                    </p>
+                  </div>
+                  <div className="mt-6">
+                    <Link to="/assessment" className="btn-primary inline-block text-center">
+                      Take assessment
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="card p-6">
               <h3 className="text-lg font-semibold text-slate-900">Recent activity</h3>
-              <ul className="mt-4 space-y-4">
-                {recentActivity.map((item) => (
-                  <li key={item.id} className="flex items-start gap-3">
-                    <span className={`mt-1 flex h-2 w-2 shrink-0 rounded-full ${toneMap[item.tone] || toneMap.slate}`} />
-                    <div className="min-w-0">
-                      <p className="text-sm text-slate-800">{item.label}</p>
-                      <p className="mt-0.5 text-xs text-slate-500">{item.timestamp}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              {dynamicActivities.length > 0 ? (
+                <ul className="mt-4 space-y-4">
+                  {dynamicActivities.map((item) => (
+                    <li key={item.id} className="flex items-start gap-3">
+                      <span className={`mt-1 flex h-2 w-2 shrink-0 rounded-full ${toneMap[item.tone] || toneMap.slate}`} />
+                      <div className="min-w-0">
+                        <p className="text-sm text-slate-800">{item.label}</p>
+                        <p className="mt-0.5 text-xs text-slate-500">{item.timestamp}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-4 text-sm text-slate-500">No recent activity.</p>
+              )}
             </div>
+
           </section>
     </div>
   )

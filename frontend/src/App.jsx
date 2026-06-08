@@ -10,12 +10,16 @@ import CareerDetail from './pages/CareerDetail.jsx'
 import IntelligenceReport from './pages/IntelligenceReport.jsx'
 import Profile from './pages/Profile.jsx'
 import AdminUsers from './pages/AdminUsers.jsx'
+import Methodology from './pages/Methodology.jsx'
+import AboutUs from './pages/AboutUs.jsx'
 
 export default function App() {
   return (
     <Routes>
       <Route element={<RootLayout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/methodology" element={<Methodology />} />
+        <Route path="/about" element={<AboutUs />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
