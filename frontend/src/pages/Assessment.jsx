@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import SectionTitle from '../components/SectionTitle.jsx'
 import AssessmentSlider from '../components/AssessmentSlider.jsx'
 import { intelligenceDimensions } from '../services/intelligenceScores.js'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Assessment() {
   const navigate = useNavigate()
+  const { user, updateUser, apiUrl } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
@@ -20,6 +22,33 @@ export default function Assessment() {
     self_awareness: 3.0,
     sustainability_focus: 3.0
   })
+
+  useEffect(() => {
+    if (user?.assessment?.scores) {
+      setScores(user.assessment.scores)
+    } else {
+      const saved = localStorage.getItem('saved_scores') || localStorage.getItem('career_predictions')
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved)
+          const loadedScores = parsed.scores || parsed
+          if (loadedScores && typeof loadedScores === 'object') {
+            setScores(prev => {
+              const updated = { ...prev }
+              for (const key of Object.keys(prev)) {
+                if (loadedScores[key] !== undefined) {
+                  updated[key] = Number(loadedScores[key])
+                }
+              }
+              return updated
+            })
+          }
+        } catch (e) {
+          console.error('Failed to parse saved scores:', e)
+        }
+      }
+    }
+  }, [user])
 
   const handleScoreChange = (id, value) => {
     setScores((prev) => ({
@@ -49,26 +78,54 @@ export default function Assessment() {
     }
 
     try {
-      const response = await fetch('http://localhost:5001/api/predict', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(preprocessedPayload)
-      })
+      let predictions = []
+      let timestamp = new Date().toISOString()
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to fetch predictions from AI service')
+      if (user) {
+        const token = localStorage.getItem('accessToken')
+        const response = await fetch(`${apiUrl}/users/assessment`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(scores)
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.message || 'Failed to save assessment to backend')
+        }
+
+        const resData = await response.json()
+        predictions = resData.data.predictions
+        timestamp = resData.data.completedAt
+
+        // Update context state
+        updateUser({ assessment: resData.data })
+      } else {
+        const response = await fetch('http://localhost:5001/api/predict', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(preprocessedPayload)
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Failed to fetch predictions from AI service')
+        }
+
+        const data = await response.json()
+        predictions = data.predictions
       }
 
-      const data = await response.json()
-      
       // Persist results and user scores in localStorage
       localStorage.setItem('career_predictions', JSON.stringify({
         scores,
-        predictions: data.predictions,
-        timestamp: new Date().toISOString()
+        predictions,
+        timestamp
       }))
 
       // Navigate to results page
@@ -76,16 +133,13 @@ export default function Assessment() {
     } catch (err) {
       console.error('API Error:', err)
       setError(
-        'Could not connect to the Python AI service. Please make sure the Flask backend is running on http://localhost:5001'
+        user
+          ? `Could not connect to the backend server: ${err.message}`
+          : 'Could not connect to the Python AI service. Please make sure the Flask backend is running on http://localhost:5001'
       )
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleSaveAndReturn = () => {
-    localStorage.setItem('saved_scores', JSON.stringify(scores))
-    navigate('/dashboard')
   }
 
   return (
@@ -144,13 +198,6 @@ export default function Assessment() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={handleSaveAndReturn}
-              disabled={loading}
-              className="btn-secondary disabled:opacity-50"
-            >
-              Save progress
-            </button>
             <button
               onClick={handleSubmit}
               disabled={loading}

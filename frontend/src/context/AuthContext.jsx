@@ -107,12 +107,17 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
+  const updateUser = (updatedFields) => {
+    setUser(prev => prev ? { ...prev, ...updatedFields } : null)
+  }
+
   const value = {
     user,
     loading,
     login,
     register,
     logout,
+    updateUser,
     apiUrl: API_URL
   }
 

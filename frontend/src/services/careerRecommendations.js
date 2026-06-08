@@ -406,31 +406,75 @@ function getCareerDetails(careerName, percentScores) {
   }
 }
 
-// Load and populate predictions from localStorage
-export function loadPredictions() {
+// Load and populate predictions from localStorage or user context
+export function loadPredictions(userAssessment, showSample = false) {
   try {
-    const raw = localStorage.getItem('career_predictions')
-    if (!raw) {
-      // Revert to defaults
-      Object.assign(assessmentReport, defaultReport)
+    let data = null
+
+    if (showSample) {
+      data = {
+        scores: {
+          language_skills: 3.5,
+          math_and_logic: 4.68,
+          spatial_awareness: 4.44,
+          physical_prowess: 3.48,
+          musical_ability: 3.16,
+          collaboration_skills: 3.96,
+          self_awareness: 4.24,
+          sustainability_focus: 3.32
+        },
+        predictions: defaultCareers.map((c, i) => ({
+          rank: i + 1,
+          career: c.name,
+          confidence: c.confidence
+        })),
+        timestamp: defaultReport.completedAt,
+        studentName: defaultReport.studentName
+      }
+    } else if (userAssessment && userAssessment.scores && userAssessment.predictions && userAssessment.predictions.length > 0) {
+      data = {
+        scores: userAssessment.scores,
+        predictions: userAssessment.predictions,
+        timestamp: userAssessment.completedAt || new Date().toISOString(),
+        studentName: userAssessment.name || 'Student Profile'
+      }
+    } else {
+      const raw = localStorage.getItem('career_predictions')
+      if (raw) {
+        data = JSON.parse(raw)
+      }
+    }
+
+    if (!data) {
+      // Revert to empty/no assessment taken state (no fallbacks!)
+      Object.assign(assessmentReport, {
+        completedAt: '',
+        modelVersion: '',
+        studentName: '',
+        dominantIntelligences: [],
+        growthAreas: [],
+        overallConfidence: 0,
+        modelAccuracy: '',
+        careersMatched: 0,
+        dimensionsAssessed: 0
+      })
       
       careerRecommendations.length = 0
-      careerRecommendations.push(...defaultCareers)
       
       radarSnapshot.length = 0
-      radarSnapshot.push(...defaultRadar)
       
-      Object.assign(personalizedSummary, defaultSummary)
+      Object.assign(personalizedSummary, {
+        title: '',
+        body: '',
+        highlights: []
+      })
       
       nextSteps.length = 0
-      nextSteps.push(...defaultNextSteps)
       
       intelligenceInsights.length = 0
-      intelligenceInsights.push(...defaultInsights)
       return
     }
 
-    const data = JSON.parse(raw)
     const scores = data.scores || {}
     const predictions = data.predictions || []
     const timestamp = data.timestamp ? new Date(data.timestamp).toLocaleDateString() : new Date().toLocaleDateString()
@@ -476,7 +520,7 @@ export function loadPredictions() {
     Object.assign(assessmentReport, {
       completedAt: timestamp,
       modelVersion: 'XGBoost v2.1 + UI Calibration',
-      studentName: 'Student Profile',
+      studentName: data.studentName || 'Student Profile',
       dominantIntelligences: dominant,
       growthAreas: growth,
       overallConfidence: predictions.length > 0 ? Math.round(predictions[0].confidence) : 80,

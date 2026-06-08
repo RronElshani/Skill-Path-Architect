@@ -68,6 +68,7 @@ const authService = {
         name: user.name,
         email: user.email,
         role: user.role,
+        assessment: user.assessment,
       },
     }
   },

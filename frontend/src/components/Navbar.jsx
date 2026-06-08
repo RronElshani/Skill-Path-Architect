@@ -39,13 +39,17 @@ export default function Navbar() {
     .slice(0, 2)
     .join('')
 
-  // Filter nav items: if user is not logged in, hide private pages from top navbar.
-  // If user is logged in, hide 'Home' and only show Dashboard, Assessment, Results, Profile (and Admin Users if admin).
+  // Filter nav items: if user is not logged in, show only public landing pages (Home, Methodology, About Us).
+  // If user is logged in, hide landing pages and only show Dashboard, Assessment, Results, Profile (and Admin Users if admin).
   let filteredNavItems = []
   if (!user) {
-    filteredNavItems = mainNavItems.filter((item) => item.to === '/')
+    filteredNavItems = mainNavItems.filter(
+      (item) => item.to === '/' || item.to === '/methodology' || item.to === '/about'
+    )
   } else {
-    filteredNavItems = mainNavItems.filter((item) => item.to !== '/')
+    filteredNavItems = mainNavItems.filter(
+      (item) => item.to !== '/' && item.to !== '/methodology' && item.to !== '/about'
+    )
     if (user.role === 'admin') {
       filteredNavItems.push({ to: '/admin/users', label: 'Admin Users' })
     }
@@ -113,9 +117,8 @@ export default function Navbar() {
       </div>
 
       <div
-        className={`overflow-hidden border-slate-200 bg-white transition-[max-height,opacity] duration-200 ease-out md:hidden ${
-          mobileMenuOpen ? 'max-h-96 border-t opacity-100' : 'max-h-0 opacity-0'
-        }`}
+        className={`overflow-hidden border-slate-200 bg-white transition-[max-height,opacity] duration-200 ease-out md:hidden ${mobileMenuOpen ? 'max-h-96 border-t opacity-100' : 'max-h-0 opacity-0'
+          }`}
         aria-hidden={!mobileMenuOpen}
       >
         <div className="container-page flex flex-col gap-1 py-3">

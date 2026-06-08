@@ -65,18 +65,50 @@ const defaultDimensions = [
   }
 ]
 
-export const intelligenceDimensions = [...defaultDimensions]
+const zeroDimensions = defaultDimensions.map(dim => ({ ...dim, score: 0 }))
 
-export function loadScores() {
+export const intelligenceDimensions = [...zeroDimensions]
+
+export const progressMilestones = [
+  { label: 'Profile completed', complete: false },
+  { label: 'Self-assessment finished', complete: false },
+  { label: 'Career matches generated', complete: false },
+  { label: 'Personalized summary reviewed', complete: false }
+]
+
+export function loadScores(userAssessment, showSample = false, hasProfile = false) {
   try {
-    const raw = localStorage.getItem('career_predictions')
-    if (!raw) {
+    const isAssessmentFinished = showSample || !!(userAssessment && userAssessment.scores) || !!localStorage.getItem('career_predictions')
+    const isCareersGenerated = showSample || !!(userAssessment && userAssessment.predictions && userAssessment.predictions.length > 0) || !!localStorage.getItem('career_predictions')
+    const isSummaryReviewed = isCareersGenerated && (localStorage.getItem('summary_reviewed') === 'true')
+
+    progressMilestones[0].complete = hasProfile
+    progressMilestones[1].complete = isAssessmentFinished
+    progressMilestones[2].complete = isCareersGenerated
+    progressMilestones[3].complete = isSummaryReviewed
+
+    if (showSample) {
       intelligenceDimensions.length = 0
       intelligenceDimensions.push(...defaultDimensions)
       return
     }
-    const data = JSON.parse(raw)
-    const scores = data.scores || {}
+
+    let scores = null
+    if (userAssessment && userAssessment.scores) {
+      scores = userAssessment.scores
+    } else {
+      const raw = localStorage.getItem('career_predictions')
+      if (raw) {
+        const data = JSON.parse(raw)
+        scores = data.scores
+      }
+    }
+
+    if (!scores) {
+      intelligenceDimensions.length = 0
+      intelligenceDimensions.push(...zeroDimensions)
+      return
+    }
     
     const newDims = defaultDimensions.map(dim => {
       const rawScore = scores[dim.id] || 3.0
@@ -97,10 +129,3 @@ export function loadScores() {
 
 // Initial load
 loadScores()
-
-export const progressMilestones = [
-  { label: 'Profile completed', complete: true },
-  { label: 'Self-assessment finished', complete: true },
-  { label: 'Career matches generated', complete: true },
-  { label: 'Personalized summary reviewed', complete: false }
-]

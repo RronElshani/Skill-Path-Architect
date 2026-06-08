@@ -1,13 +1,29 @@
+import { useState } from 'react'
 import { Link, useParams, Navigate } from 'react-router-dom'
 import AiBadge, { AiSparkle } from '../components/ai/AiBadge.jsx'
 import AiCareerCard, { AiMatchBreakdown } from '../components/ai/AiCareerCard.jsx'
 import { loadPredictions, getCareerById, getRelatedCareers } from '../services/careerRecommendations.js'
+import { useAuth } from '../context/AuthContext.jsx'
+import { isCareerSaved, toggleSaveCareer } from '../services/bookmarks.js'
 
 export default function CareerDetail() {
-  loadPredictions()
+  const { user } = useAuth()
   const { careerId } = useParams()
+
+  // Load user's predictions dynamically
+  loadPredictions(user?.assessment)
+
   const career = getCareerById(careerId)
   const related = getRelatedCareers(career)
+
+  const [saved, setSaved] = useState(career ? isCareerSaved(user?.id, career.id) : false)
+
+  const handleBookmark = () => {
+    if (!career) return
+    const newSaved = toggleSaveCareer(user?.id, career.id)
+    setSaved(newSaved)
+  }
+
   if (!career) return <Navigate to="/results" replace />
 
   return (
@@ -90,6 +106,18 @@ export default function CareerDetail() {
 
       <div className="flex flex-wrap gap-2 pb-4">
         <Link to="/results" className="btn-ai-ghost">← Full report</Link>
+        <button
+          type="button"
+          onClick={handleBookmark}
+          className={`btn-ai-ghost flex items-center gap-2 ${
+            saved ? 'text-indigo-600 border-indigo-200 bg-indigo-50 hover:bg-indigo-100/50' : 'hover:border-slate-300'
+          }`}
+        >
+          <svg viewBox="0 0 24 24" className="h-4 w-4" fill={saved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+            <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+          </svg>
+          {saved ? 'Saved' : 'Save Recommendation'}
+        </button>
         <Link to="/assessment" className="btn-ai">Retake assessment</Link>
       </div>
     </div>
