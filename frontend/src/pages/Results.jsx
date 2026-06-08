@@ -1,14 +1,64 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AiResultsHero from '../components/ai/AiResultsHero.jsx'
 import IntelligenceRadarChart from '../components/ai/IntelligenceRadarChart.jsx'
 import AiSummaryPanel from '../components/ai/AiSummaryPanel.jsx'
 import AiCareerCard from '../components/ai/AiCareerCard.jsx'
 import AiBadge from '../components/ai/AiBadge.jsx'
+import ReviewCard from '../components/ReviewCard.jsx'
 import { loadPredictions, assessmentReport, careerRecommendations, radarSnapshot, personalizedSummary, nextSteps } from '../services/careerRecommendations.js'
+import { fetchLlmSummary, loadCachedSummary, saveCachedSummary } from '../services/aiSummary.js'
 
 export default function Results() {
   loadPredictions()
   const topMatch = careerRecommendations[0]
+
+  const [llmBody, setLlmBody] = useState(personalizedSummary.body)
+  const [llmLoading, setLlmLoading] = useState(false)
+  const [llmError, setLlmError] = useState(null)
+
+  useEffect(() => {
+    const raw = localStorage.getItem('career_predictions')
+    if (!raw) return
+
+    let stored
+    try {
+      stored = JSON.parse(raw)
+    } catch {
+      return
+    }
+
+    const { scores, predictions, timestamp } = stored
+    if (!scores || !Array.isArray(predictions) || predictions.length === 0) return
+
+    const cached = loadCachedSummary(timestamp)
+    if (cached) {
+      setLlmBody(cached)
+      return
+    }
+
+    let cancelled = false
+    setLlmLoading(true)
+    setLlmError(null)
+
+    fetchLlmSummary(predictions, scores)
+      .then((summary) => {
+        if (cancelled) return
+        setLlmBody(summary)
+        saveCachedSummary(summary, timestamp)
+      })
+      .catch((err) => {
+        if (cancelled) return
+        setLlmError(err.message)
+      })
+      .finally(() => {
+        if (!cancelled) setLlmLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   return (
     <div className="ai-mesh -mx-4 space-y-8 rounded-2xl px-4 py-2 sm:-mx-6 sm:px-6">
@@ -31,7 +81,13 @@ export default function Results() {
           </div>
         </div>
         <div className="lg:col-span-5">
-          <AiSummaryPanel title={personalizedSummary.title} body={personalizedSummary.body} highlights={personalizedSummary.highlights} />
+          <AiSummaryPanel
+            title={personalizedSummary.title}
+            body={llmBody}
+            highlights={llmLoading || llmError || llmBody !== personalizedSummary.body ? [] : personalizedSummary.highlights}
+            loading={llmLoading}
+            error={llmError}
+          />
         </div>
       </section>
 
@@ -76,6 +132,8 @@ export default function Results() {
           ))}
         </div>
       </section>
+
+      <ReviewCard predictions={careerRecommendations} />
     </div>
   )
 }
