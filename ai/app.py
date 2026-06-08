@@ -4,10 +4,16 @@ import joblib
 import numpy as np
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from dotenv import load_dotenv
 
 # Add current directory to path to ensure predict can be imported cleanly
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Load environment variables from ai/.env (used by the LLM summary endpoint)
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env'))
+
 import predict
+import llm
 
 app = Flask(__name__)
 # Enable CORS for frontend integration
@@ -137,6 +143,32 @@ def predict_career():
         import traceback
         traceback.print_exc()
         return jsonify({'error': f'Prediction execution failed: {str(e)}'}), 500
+
+
+@app.route('/api/summary', methods=['POST'])
+def generate_summary():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+
+        predictions = data.get('predictions')
+        scores = data.get('scores')
+
+        if not isinstance(predictions, list) or len(predictions) == 0:
+            return jsonify({'error': 'predictions array is required'}), 400
+        if not isinstance(scores, dict):
+            return jsonify({'error': 'scores object is required'}), 400
+
+        summary = llm.generate_summary(predictions, scores)
+        return jsonify({'success': True, 'summary': summary})
+
+    except RuntimeError as e:
+        return jsonify({'error': str(e)}), 502
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Summary generation failed: {str(e)}'}), 500
 
 
 if __name__ == '__main__':
