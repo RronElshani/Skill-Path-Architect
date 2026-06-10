@@ -8,12 +8,19 @@ export default function Input({
   hint,
   autoComplete,
   required = false,
-  className = ''
+  className = '',
+  tone = 'light'
 }) {
+  const labelClass = tone === 'dark' ? 'text-slate-300' : 'text-slate-700'
+  const hintClass = tone === 'dark' ? 'text-slate-500' : 'text-slate-500'
+  const fieldClass = tone === 'dark'
+    ? 'input-field border-slate-700 bg-slate-900 text-white placeholder:text-slate-500'
+    : 'input-field'
+
   return (
     <div className={`space-y-1.5 ${className}`}>
       {label && (
-        <label htmlFor={id} className="block text-sm font-medium text-slate-700">
+        <label htmlFor={id} className={`block text-sm font-medium ${labelClass}`}>
           {label}
           {required && <span className="ml-0.5 text-brand-600">*</span>}
         </label>
@@ -27,9 +34,9 @@ export default function Input({
         autoComplete={autoComplete}
         placeholder={placeholder}
         required={required}
-        className="input-field"
+        className={fieldClass}
       />
-      {hint && <p className="text-xs text-slate-500">{hint}</p>}
+      {hint && <p className={`text-xs ${hintClass}`}>{hint}</p>}
     </div>
   )
 }

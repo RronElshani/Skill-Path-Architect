@@ -1,8 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import { API_URL } from '../config/api.js'
 
 const AuthContext = createContext(null)
-
-const API_URL = 'http://localhost:5004/api'
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
@@ -61,7 +60,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem('accessToken', result.accessToken)
     localStorage.setItem('refreshToken', result.refreshToken)
     setUser(result.user)
-    return { success: true }
+    return { success: true, user: result.user }
   }
 
   // Register handler

@@ -1,7 +1,6 @@
-// Client for the Express review endpoints.
-// Reviews capture how satisfied the user was with the model's predictions.
+import { API_URL } from '../config/api.js'
 
-const API_URL = 'http://localhost:5004/api'
+// Client for the Express review endpoints.
 
 function authHeader() {
   const token = localStorage.getItem('accessToken')
@@ -35,4 +34,29 @@ export async function getMyReviews() {
     throw new Error(data.message || 'Failed to fetch reviews')
   }
   return data.data
+}
+
+export async function fetchPublicReviews() {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      const response = await fetch(`${API_URL}/reviews/public`)
+      const data = await response.json()
+
+      if (response.status === 503 && attempt < 2) {
+        await new Promise((resolve) => setTimeout(resolve, 1500))
+        continue
+      }
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch reviews')
+      }
+
+      return data.data
+    } catch (err) {
+      if (attempt === 2) throw err
+      await new Promise((resolve) => setTimeout(resolve, 1500))
+    }
+  }
+
+  return []
 }

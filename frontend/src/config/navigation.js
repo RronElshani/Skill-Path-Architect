@@ -12,10 +12,7 @@ export const mainNavItems = [
 export const publicNavItems = mainNavItems
 
 /** Sidebar-only extras (not duplicated in the top navbar) */
-export const sidebarNavItems = [
-  ...mainNavItems,
-  { to: '/admin/users', label: 'Admin Users' }
-]
+export const sidebarNavItems = [...mainNavItems]
 
 export const footerSections = [
   {

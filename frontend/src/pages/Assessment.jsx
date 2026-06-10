@@ -4,6 +4,7 @@ import SectionTitle from '../components/SectionTitle.jsx'
 import AssessmentSlider from '../components/AssessmentSlider.jsx'
 import { intelligenceDimensions } from '../services/intelligenceScores.js'
 import { useAuth } from '../context/AuthContext.jsx'
+import { AI_URL } from '../config/api.js'
 
 export default function Assessment() {
   const navigate = useNavigate()
@@ -106,7 +107,7 @@ export default function Assessment() {
         // Update context state
         updateUser({ assessment: resData.data })
       } else {
-        const response = await fetch('http://localhost:5001/api/predict', {
+        const response = await fetch(`${AI_URL}/api/predict`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -138,7 +139,7 @@ export default function Assessment() {
       setError(
         user
           ? `Could not connect to the backend server: ${err.message}`
-          : 'Could not connect to the Python AI service. Please make sure the Flask backend is running on http://localhost:5001'
+          : `Could not connect to the Python AI service. Please make sure the Flask backend is running on ${AI_URL}`
       )
     } finally {
       setLoading(false)

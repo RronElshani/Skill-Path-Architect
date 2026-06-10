@@ -42,6 +42,18 @@ const reviewController = {
     }
   },
 
+  async getPublic(req, res, next) {
+    try {
+      const reviews = await reviewService.getPublicReviews()
+      res.status(200).json({
+        success: true,
+        data: reviews,
+      })
+    } catch (error) {
+      next(error)
+    }
+  },
+
   async deleteReview(req, res, next) {
     try {
       await reviewService.deleteReview(req.params.id)

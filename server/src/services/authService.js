@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import config from '../config/index.js'
 import userRepository from '../repositories/userRepository.js'
+import { isAdminEmail } from './bootstrapAdmin.js'
 
 /**
  * Service layer — contains all business logic for authentication.
@@ -26,6 +27,7 @@ const authService = {
       name,
       email,
       password: hashedPassword,
+      role: isAdminEmail(email) ? 'admin' : 'user',
     })
 
     return {
@@ -51,6 +53,11 @@ const authService = {
       const error = new Error('Invalid email or password')
       error.statusCode = 401
       throw error
+    }
+
+    if (isAdminEmail(user.email) && user.role !== 'admin') {
+      await userRepository.updateById(user._id, { role: 'admin' })
+      user.role = 'admin'
     }
 
     // Generate tokens

@@ -9,7 +9,8 @@ import Results from './pages/Results.jsx'
 import CareerDetail from './pages/CareerDetail.jsx'
 import IntelligenceReport from './pages/IntelligenceReport.jsx'
 import Profile from './pages/Profile.jsx'
-import AdminUsers from './pages/AdminUsers.jsx'
+import AdminEntry from './components/AdminEntry.jsx'
+import AdminLogin from './pages/AdminLogin.jsx'
 import Methodology from './pages/Methodology.jsx'
 import AboutUs from './pages/AboutUs.jsx'
 
@@ -28,7 +29,8 @@ export default function App() {
         <Route path="/results/intelligences" element={<IntelligenceReport />} />
         <Route path="/results/careers/:careerId" element={<CareerDetail />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminEntry />} />
       </Route>
     </Routes>
   )

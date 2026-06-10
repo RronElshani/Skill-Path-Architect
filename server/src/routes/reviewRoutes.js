@@ -5,7 +5,10 @@ import { submitReviewValidation, validate } from '../validators/reviewValidator.
 
 const router = Router()
 
-// All review routes require authentication
+// Public — no login required
+router.get('/public', reviewController.getPublic)
+
+// Authenticated routes
 router.use(authenticate)
 
 // User actions

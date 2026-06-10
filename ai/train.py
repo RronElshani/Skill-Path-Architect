@@ -83,8 +83,10 @@ def main(input_csv: str, model_output: str):
     print(report)
 
     save_model(model, model_output)
-    save_model(label_encoder, 'models/label_encoder.h5')
+    encoder_output = os.path.join(os.path.dirname(model_output), 'career_label_encoder.h5')
+    save_model(label_encoder, encoder_output)
     print(f"Model saved to: {model_output}")
+    print(f"Label encoder saved to: {encoder_output}")
 
 
 if __name__ == "__main__":
