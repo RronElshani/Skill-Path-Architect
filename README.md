@@ -113,7 +113,7 @@ AI-Guidance-Counselor/
 ### Prerequisites
 
 - **Node.js** v20+
-- **MongoDB** running locally or a MongoDB Atlas URI
+- **MongoDB Community Server** installed and running locally on port `27017` (required for this project to work), or a remote MongoDB Atlas URI.
 - **Python** 3.10+ (for the AI module only)
 
 ### 1. Clone the Repository

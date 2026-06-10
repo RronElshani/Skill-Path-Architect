@@ -4,8 +4,7 @@ export const mainNavItems = [
   { to: '/about', label: 'About Us' },
   { to: '/dashboard', label: 'Dashboard', end: true },
   { to: '/assessment', label: 'Assessment' },
-  { to: '/results', label: 'Results' },
-  { to: '/profile', label: 'Profile' }
+  { to: '/results', label: 'Results' }
 ]
 
 /** @deprecated use mainNavItems */
