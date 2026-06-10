@@ -1,7 +1,8 @@
 import { Router } from 'express'
 import reviewController from '../controllers/reviewController.js'
 import { authenticate, authorize } from '../middleware/auth.js'
-import { submitReviewValidation, validate } from '../validators/reviewValidator.js'
+import { submitReviewValidation } from '../validators/reviewValidator.js'
+import { validate } from '../middleware/validate.js'
 
 const router = Router()
 

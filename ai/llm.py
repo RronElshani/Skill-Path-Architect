@@ -62,10 +62,52 @@ def build_prompt(predictions, scores):
     )
 
 
+def generate_local_summary(predictions, scores):
+    """Template-based summary used when no LLM API key is configured."""
+    top = predictions[0] if predictions else {}
+    top_career = top.get('career', 'your top match')
+    top_confidence = top.get('confidence', 0)
+
+    ranked_traits = sorted(
+        [
+            (INTELLIGENCE_LABELS[key], float(scores[key]))
+            for key in INTELLIGENCE_LABELS
+            if scores.get(key) is not None
+        ],
+        key=lambda item: item[1],
+        reverse=True,
+    )
+    trait_names = [label for label, _ in ranked_traits[:3]]
+    if len(trait_names) >= 3:
+        trait_phrase = f"{trait_names[0]}, {trait_names[1]}, and {trait_names[2]}"
+    else:
+        trait_phrase = ', '.join(trait_names) or 'several balanced intelligences'
+
+    other_matches = predictions[1:3]
+    backup_line = ''
+    if other_matches:
+        names = [f"{p.get('career')} ({p.get('confidence', 0)}%)" for p in other_matches]
+        backup_line = f" Strong alternatives include {names[0]}"
+        if len(names) > 1:
+            backup_line += f" and {names[1]}"
+        backup_line += '.'
+
+    return (
+        f"Your self-assessment highlights {trait_phrase} as your strongest intelligences. "
+        f"These strengths shape how you learn, collaborate, and solve problems — and they are a solid foundation for choosing a direction after high school.\n\n"
+        f"Based on your profile, {top_career} is your best-fit career match at {top_confidence}% alignment."
+        f"{backup_line} "
+        f"This recommendation reflects how your scores map to real-world roles in the model's training data.\n\n"
+        f"To move forward, research entry paths into {top_career}, look for short courses or volunteer opportunities in related fields, "
+        f"and talk with a counselor about university programs that build on your top strengths. "
+        f"Retake the assessment anytime your interests shift — your blueprint should grow with you."
+    )
+
+
 def generate_summary(predictions, scores):
     api_key = os.environ.get('LLM_API_KEY')
     if not api_key:
-        raise RuntimeError('LLM_API_KEY is not configured')
+        return generate_local_summary(predictions, scores)
 
     base_url = os.environ.get('LLM_BASE_URL', DEFAULT_BASE_URL).rstrip('/')
     model = os.environ.get('LLM_MODEL', DEFAULT_MODEL)

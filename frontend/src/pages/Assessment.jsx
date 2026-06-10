@@ -4,11 +4,11 @@ import SectionTitle from '../components/SectionTitle.jsx'
 import AssessmentSlider from '../components/AssessmentSlider.jsx'
 import { intelligenceDimensions } from '../services/intelligenceScores.js'
 import { useAuth } from '../context/AuthContext.jsx'
-import { AI_URL } from '../config/api.js'
+import { AI_URL, API_URL } from '../config/api.js'
 
 export default function Assessment() {
   const navigate = useNavigate()
-  const { user, updateUser, apiUrl } = useAuth()
+  const { user, updateUser, authFetch } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
@@ -84,14 +84,12 @@ export default function Assessment() {
       let summary = undefined
 
       if (user) {
-        const token = localStorage.getItem('accessToken')
-        const response = await fetch(`${apiUrl}/users/assessment`, {
+        const response = await authFetch(`${API_URL}/users/assessment`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify(scores)
+          body: JSON.stringify(scores),
         })
 
         if (!response.ok) {

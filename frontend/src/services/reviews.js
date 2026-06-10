@@ -1,18 +1,11 @@
 import { API_URL } from '../config/api.js'
-
-// Client for the Express review endpoints.
-
-function authHeader() {
-  const token = localStorage.getItem('accessToken')
-  return token ? { Authorization: `Bearer ${token}` } : {}
-}
+import { authFetch } from '../utils/authFetch.js'
 
 export async function submitReview({ rating, satisfied, comment, predictions }) {
-  const response = await fetch(`${API_URL}/reviews`, {
+  const response = await authFetch(`${API_URL}/reviews`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      ...authHeader(),
     },
     body: JSON.stringify({ rating, satisfied, comment, predictions }),
   })
@@ -25,9 +18,7 @@ export async function submitReview({ rating, satisfied, comment, predictions }) 
 }
 
 export async function getMyReviews() {
-  const response = await fetch(`${API_URL}/reviews/mine`, {
-    headers: authHeader(),
-  })
+  const response = await authFetch(`${API_URL}/reviews/mine`)
 
   const data = await response.json()
   if (!response.ok) {

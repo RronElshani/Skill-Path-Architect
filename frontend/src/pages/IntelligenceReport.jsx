@@ -29,7 +29,9 @@ export default function IntelligenceReport() {
       <section className="grid gap-6 lg:grid-cols-12">
         <div className="ai-panel p-6 lg:col-span-5">
           <h2 className="font-semibold text-slate-900">Radar visualization</h2>
-          <div className="mt-4"><IntelligenceRadarChart data={radarSnapshot} /></div>
+          <div className="mt-4 w-full">
+            <IntelligenceRadarChart data={radarSnapshot} />
+          </div>
         </div>
         <div className="lg:col-span-7">
           <h2 className="font-semibold text-slate-900">Dimension matrix</h2>

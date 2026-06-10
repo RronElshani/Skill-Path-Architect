@@ -1,9 +1,5 @@
 import { API_URL, AI_URL } from '../config/api.js'
-
-function authHeader() {
-  const token = localStorage.getItem('accessToken')
-  return token ? { Authorization: `Bearer ${token}` } : {}
-}
+import { authFetch } from '../utils/authFetch.js'
 
 async function parseResponse(response) {
   const data = await response.json()
@@ -14,43 +10,36 @@ async function parseResponse(response) {
 }
 
 export async function fetchAllUsers() {
-  const response = await fetch(`${API_URL}/users`, {
-    headers: authHeader(),
-  })
+  const response = await authFetch(`${API_URL}/users`)
   const data = await parseResponse(response)
   return data.data
 }
 
 export async function fetchAllReviews() {
-  const response = await fetch(`${API_URL}/reviews`, {
-    headers: authHeader(),
-  })
+  const response = await authFetch(`${API_URL}/reviews`)
   const data = await parseResponse(response)
   return data.data
 }
 
 export async function deleteUser(userId) {
-  const response = await fetch(`${API_URL}/users/${userId}`, {
+  const response = await authFetch(`${API_URL}/users/${userId}`, {
     method: 'DELETE',
-    headers: authHeader(),
   })
   return parseResponse(response)
 }
 
 export async function deleteReview(reviewId) {
-  const response = await fetch(`${API_URL}/reviews/${reviewId}`, {
+  const response = await authFetch(`${API_URL}/reviews/${reviewId}`, {
     method: 'DELETE',
-    headers: authHeader(),
   })
   return parseResponse(response)
 }
 
 export async function updateUserRole(userId, role) {
-  const response = await fetch(`${API_URL}/users/${userId}`, {
+  const response = await authFetch(`${API_URL}/users/${userId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      ...authHeader(),
     },
     body: JSON.stringify({ role }),
   })
@@ -65,7 +54,12 @@ export async function checkServicesHealth() {
     const response = await fetch(`${API_URL}/health`)
     const data = await response.json()
     status.api = response.ok ? 'online' : 'degraded'
-    status.database = data.database?.persistent ? 'mongodb (persistent)' : data.database?.mode || 'unknown'
+    const db = data.database
+    if (db?.nameMatches === false) {
+      status.database = `${db?.name} (expected ${db?.expectedName})`
+    } else {
+      status.database = db?.persistent ? `mongodb (${db?.expectedName || db?.name})` : db?.mode || 'unknown'
+    }
   } catch {
     status.api = 'offline'
   }

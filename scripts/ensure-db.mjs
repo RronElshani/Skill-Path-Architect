@@ -43,7 +43,7 @@ try {
 } catch {
   console.warn(
     '\nCould not start Docker MongoDB. Start Docker Desktop and run: npm run db:start\n' +
-      'The server will fall back to in-memory MongoDB until a real database is available.\n'
+      'The server will fall back to a file-backed local MongoDB on port 27018 until Docker is available.\n'
   )
   process.exit(0)
 }

@@ -1,4 +1,7 @@
 import userRepository from '../repositories/userRepository.js'
+import { ASSESSMENT_DIMENSIONS } from '../constants/assessmentDimensions.js'
+
+const ADMIN_UPDATABLE_FIELDS = ['name', 'role']
 
 /**
  * Service layer for user-related business logic.
@@ -19,7 +22,20 @@ const userService = {
   },
 
   async updateUser(id, updateData) {
-    const user = await userRepository.updateById(id, updateData)
+    const allowed = {}
+    for (const field of ADMIN_UPDATABLE_FIELDS) {
+      if (updateData[field] !== undefined) {
+        allowed[field] = updateData[field]
+      }
+    }
+
+    if (Object.keys(allowed).length === 0) {
+      const error = new Error('No valid fields to update. Allowed: name, role')
+      error.statusCode = 400
+      throw error
+    }
+
+    const user = await userRepository.updateById(id, allowed)
     if (!user) {
       const error = new Error('User not found')
       error.statusCode = 404
@@ -39,17 +55,7 @@ const userService = {
   },
 
   async saveAssessment(userId, rawScores) {
-    const dimensions = [
-      'language_skills',
-      'math_and_logic',
-      'spatial_awareness',
-      'physical_prowess',
-      'musical_ability',
-      'collaboration_skills',
-      'self_awareness',
-      'sustainability_focus'
-    ]
-    for (const dim of dimensions) {
+    for (const dim of ASSESSMENT_DIMENSIONS) {
       if (rawScores[dim] === undefined) {
         const error = new Error(`Missing value for dimension: ${dim}`)
         error.statusCode = 400

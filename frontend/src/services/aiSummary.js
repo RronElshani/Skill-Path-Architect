@@ -14,7 +14,7 @@ export async function fetchLlmSummary(predictions, scores) {
   if (!response.ok) {
     throw new Error(data.error || 'Failed to generate summary')
   }
-  return data.summary
+  return { summary: data.summary, source: data.source || null }
 }
 
 export function loadCachedSummary(predictionsTimestamp) {

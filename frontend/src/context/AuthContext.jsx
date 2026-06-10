@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { API_URL } from '../config/api.js'
+import { authFetch, setSessionExpiredHandler, restoreAccessToken } from '../utils/authFetch.js'
 
 const AuthContext = createContext(null)
 
@@ -7,30 +8,41 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // Fetch current user session from the backend on startup
+  const clearSession = useCallback(() => {
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
+    setUser(null)
+  }, [])
+
+  useEffect(() => {
+    setSessionExpiredHandler(clearSession)
+    return () => setSessionExpiredHandler(null)
+  }, [clearSession])
+
   useEffect(() => {
     async function checkSession() {
-      const token = localStorage.getItem('accessToken')
-      if (!token) {
+      const accessToken = localStorage.getItem('accessToken')
+      const refreshToken = localStorage.getItem('refreshToken')
+
+      if (!accessToken && !refreshToken) {
         setLoading(false)
         return
       }
 
       try {
-        const response = await fetch(`${API_URL}/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
+        if (!accessToken && refreshToken) {
+          await restoreAccessToken()
+        }
+
+        const response = await authFetch(`${API_URL}/auth/me`)
 
         if (response.ok) {
           const result = await response.json()
-          setUser(result.data) // result.data contains { id, name, email, role }
-        } else {
-          // Token is invalid or expired
-          localStorage.removeItem('accessToken')
-          localStorage.removeItem('refreshToken')
+          setUser(result.data)
+        } else if (response.status === 401) {
+          clearSession()
         }
+        // Keep tokens on 503/5xx so a brief server/DB startup blip does not log users out
       } catch (err) {
         console.error('Session check failed:', err)
       } finally {
@@ -39,16 +51,15 @@ export function AuthProvider({ children }) {
     }
 
     checkSession()
-  }, [])
+  }, [clearSession])
 
-  // Login handler
   const login = async (email, password) => {
     const response = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
     })
 
     const result = await response.json()
@@ -63,14 +74,13 @@ export function AuthProvider({ children }) {
     return { success: true, user: result.user }
   }
 
-  // Register handler
   const register = async (name, email, password) => {
     const response = await fetch(`${API_URL}/auth/register`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name, email, password })
+      body: JSON.stringify({ name, email, password }),
     })
 
     const result = await response.json()
@@ -79,20 +89,15 @@ export function AuthProvider({ children }) {
       throw new Error(result.message || result.errors?.[0]?.message || 'Registration failed')
     }
 
-    // Automatically log the user in after registration
     return await login(email, password)
   }
 
-  // Logout handler
   const logout = async () => {
     const token = localStorage.getItem('accessToken')
     if (token) {
       try {
-        await fetch(`${API_URL}/auth/logout`, {
+        await authFetch(`${API_URL}/auth/logout`, {
           method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
         })
       } catch (err) {
         console.error('Logout request to server failed:', err)
@@ -101,13 +106,12 @@ export function AuthProvider({ children }) {
 
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
-    // Optionally clear local assessment data too:
     localStorage.removeItem('career_predictions')
     setUser(null)
   }
 
   const updateUser = (updatedFields) => {
-    setUser(prev => prev ? { ...prev, ...updatedFields } : null)
+    setUser((prev) => (prev ? { ...prev, ...updatedFields } : null))
   }
 
   const value = {
@@ -117,7 +121,8 @@ export function AuthProvider({ children }) {
     register,
     logout,
     updateUser,
-    apiUrl: API_URL
+    authFetch,
+    apiUrl: API_URL,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
