@@ -1,3 +1,5 @@
+import { slugifyCareer } from './careers.js'
+
 // Default mock data (fallback if no local assessment is found)
 const defaultReport = {
   completedAt: 'June 1, 2025',
@@ -532,7 +534,7 @@ export function loadPredictions(userAssessment, showSample = false) {
 
     // Update careerRecommendations
     const dynamicCareers = predictions.map((pred, index) => {
-      const careerId = pred.career.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+      const careerId = slugifyCareer(pred.career)
       const meta = getCareerDetails(pred.career, percentScores)
       
       return {
@@ -560,7 +562,7 @@ export function loadPredictions(userAssessment, showSample = false) {
         relatedCareerIds: predictions
           .filter((_, idx) => idx !== index)
           .slice(0, 2)
-          .map(p => p.career.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
+          .map(p => slugifyCareer(p.career))
       }
     })
 
