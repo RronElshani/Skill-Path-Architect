@@ -24,8 +24,6 @@ const config = {
   defaultAdminPassword: process.env.DEFAULT_ADMIN_PASSWORD || 'Admin123!',
   defaultAdminName: process.env.DEFAULT_ADMIN_NAME || 'System Admin',
   adminEmail: process.env.ADMIN_EMAIL || '',
-  /** In development, use file-backed local MongoDB first so accounts persist in server/data/db */
-  preferLocalMongo: process.env.PREFER_LOCAL_MONGO !== 'false',
 }
 
 export default config

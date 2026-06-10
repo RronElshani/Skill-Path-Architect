@@ -9,7 +9,7 @@ This project integrates a machine learning prediction pipeline, a Node.js Expres
 Before starting, ensure you have the following installed on your machine:
 
 1. **Node.js** (v20 or newer)
-2. **MongoDB** (running locally, or a MongoDB Atlas connection URI)
+2. **MongoDB Community Server** installed and running locally (on the default port `27017`), or a remote MongoDB Atlas connection URI. **Downloading MongoDB is required for the project to run.**
 3. **Python** (v3.10 or newer) with `pip` (standard system Python, or managed via `conda` / `venv`)
 
 ---

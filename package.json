@@ -4,15 +4,11 @@
   "description": "Skill Path Architect root concurrent runner",
   "main": "index.js",
   "scripts": {
-    "db:start": "docker compose up -d mongodb",
-    "db:stop": "docker compose down",
-    "db:ensure": "node scripts/ensure-db.mjs",
     "ensure:models": "node -e \"const fs=require('fs');const cp=require('child_process');const m='ai/models/career_prediction_model.h5';const e='ai/models/career_label_encoder.h5';if(!fs.existsSync(m)||!fs.existsSync(e)){console.log('Training AI models (first run)...');cp.execSync('python ai/train.py -i ai/dataset/dataset_skill_predictor.csv -m ai/models/career_prediction_model.h5',{stdio:'inherit'});}\"",
     "train:ai": "python ai/train.py -i ai/dataset/dataset_skill_predictor.csv -m ai/models/career_prediction_model.h5",
     "dev:ai": "npm run ensure:models && python ai/app.py",
     "dev:server": "npm run dev --prefix server",
     "dev:frontend": "npm run dev --prefix frontend",
-    "predev": "node scripts/ensure-db.mjs",
     "dev": "concurrently --kill-others \"npm run dev:ai\" \"npm run dev:server\" \"npm run dev:frontend\""
   },
   "devDependencies": {

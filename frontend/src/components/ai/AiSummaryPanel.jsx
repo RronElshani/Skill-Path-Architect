@@ -1,8 +1,16 @@
+import { useState } from 'react'
 import AiBadge, { AiSparkle } from './AiBadge.jsx'
 
 export default function AiSummaryPanel({ title, body, highlights = [], loading = false, error = null, source = null }) {
-  const paragraphs = typeof body === 'string'
-    ? body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const isLong = body && body.length > 400
+  const displayedBody = isLong && !isExpanded
+    ? body.slice(0, 400) + '...'
+    : body
+
+  const paragraphs = typeof displayedBody === 'string'
+    ? displayedBody.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
     : []
 
   return (
@@ -39,10 +47,20 @@ export default function AiSummaryPanel({ title, body, highlights = [], loading =
               ))}
             </div>
           ) : (
-            <p className="mt-4 text-sm leading-relaxed text-slate-600">{body}</p>
+            <p className="mt-4 text-sm leading-relaxed text-slate-600">{displayedBody}</p>
           )}
 
-          {highlights.length > 0 && (
+          {isLong && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-600 hover:bg-indigo-100 transition-colors duration-200 focus:outline-none"
+            >
+              {isExpanded ? 'Show Less' : 'Read Full Summary'}
+              <span className="text-[10px]">{isExpanded ? '▲' : '▼'}</span>
+            </button>
+          )}
+
+          {highlights.length > 0 && isExpanded && (
             <ul className="mt-5 space-y-3">
               {highlights.map((item) => (
                 <li key={item} className="flex items-start gap-3 rounded-lg border border-indigo-100 bg-indigo-50/40 px-3 py-2.5 text-sm text-slate-700">

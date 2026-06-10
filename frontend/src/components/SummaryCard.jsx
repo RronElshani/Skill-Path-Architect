@@ -1,4 +1,13 @@
+import { useState } from 'react'
+
 export default function SummaryCard({ title, body, highlights = [], footer }) {
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const isLong = body && body.length > 400
+  const displayedBody = isLong && !isExpanded
+    ? body.slice(0, 400) + '...'
+    : body
+
   return (
     <section className="card relative overflow-hidden p-6">
       <div className="absolute right-0 top-0 h-32 w-32 -translate-y-12 translate-x-12 rounded-full bg-brand-100/70 blur-2xl" />
@@ -12,9 +21,19 @@ export default function SummaryCard({ title, body, highlights = [], footer }) {
           <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
         </div>
 
-        <p className="mt-3 text-sm leading-relaxed text-slate-600">{body}</p>
+        <p className="mt-3 text-sm leading-relaxed text-slate-600">{displayedBody}</p>
 
-        {highlights.length > 0 && (
+        {isLong && (
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-100 transition-colors duration-200 focus:outline-none"
+          >
+            {isExpanded ? 'Show Less' : 'Read Full Summary'}
+            <span className="text-[10px]">{isExpanded ? '▲' : '▼'}</span>
+          </button>
+        )}
+
+        {highlights.length > 0 && isExpanded && (
           <ul className="mt-5 space-y-2.5">
             {highlights.map((item) => (
               <li key={item} className="flex items-start gap-2.5 text-sm text-slate-700">
