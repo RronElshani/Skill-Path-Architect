@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import connectDB, { usingInMemoryDb } from '../src/config/db.js'
+import connectDB from '../src/config/db.js'
 import userRepository from '../src/repositories/userRepository.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -15,22 +15,6 @@ if (!email) {
 }
 
 await connectDB()
-
-if (usingInMemoryDb) {
-  console.error(`
-Cannot promote users with make-admin while using in-memory MongoDB.
-This script opens a separate empty database from your running dev server.
-
-Use one of these instead:
-
-  1. Set ADMIN_EMAIL in server/.env, restart "npm run dev", then sign out and back in:
-       ADMIN_EMAIL=${email}
-
-  2. Start persistent MongoDB from the project root, re-register, then rerun make-admin:
-       npm run db:start
-`)
-  process.exit(1)
-}
 
 const user = await userRepository.findByEmail(email)
 if (!user) {

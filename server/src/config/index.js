@@ -1,10 +1,18 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
+function parseDatabaseName(uri) {
+  const match = uri.match(/\/([^/?]+)(?:\?|$)/)
+  return match?.[1] || 'ai-guidance-counselor'
+}
+
+const mongodbUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/ai-guidance-counselor'
+
 const config = {
   port: process.env.PORT || 5004,
   nodeEnv: process.env.NODE_ENV || 'development',
-  mongodbUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/ai-guidance-counselor',
+  mongodbUri,
+  mongodbDatabase: process.env.MONGODB_DATABASE || parseDatabaseName(mongodbUri),
   jwt: {
     accessSecret: process.env.JWT_ACCESS_SECRET,
     refreshSecret: process.env.JWT_REFRESH_SECRET,
@@ -16,6 +24,8 @@ const config = {
   defaultAdminPassword: process.env.DEFAULT_ADMIN_PASSWORD || 'Admin123!',
   defaultAdminName: process.env.DEFAULT_ADMIN_NAME || 'System Admin',
   adminEmail: process.env.ADMIN_EMAIL || '',
+  /** In development, use file-backed local MongoDB first so accounts persist in server/data/db */
+  preferLocalMongo: process.env.PREFER_LOCAL_MONGO !== 'false',
 }
 
 export default config

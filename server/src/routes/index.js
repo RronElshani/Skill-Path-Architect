@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 import authRoutes from './authRoutes.js'
 import userRoutes from './userRoutes.js'
 import reviewRoutes from './reviewRoutes.js'
+import config from '../config/index.js'
 import { dbStorageMode, usingInMemoryDb } from '../config/db.js'
 
 const router = Router()
@@ -24,6 +25,8 @@ router.get('/health', (req, res) => {
     database: {
       status: dbStatus,
       name: mongoose.connection.name || null,
+      expectedName: config.mongodbDatabase,
+      nameMatches: mongoose.connection.name === config.mongodbDatabase,
       host: mongoose.connection.host || null,
       persistent,
       mode: dbStorageMode,

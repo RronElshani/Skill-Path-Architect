@@ -47,13 +47,3 @@ export async function bootstrapAdmin() {
   await ensureDefaultAdmin()
   await promoteConfiguredAdmin()
 }
-
-export function isAdminEmail(email) {
-  const normalized = email?.trim().toLowerCase()
-  if (!normalized) return false
-
-  const defaultAdmin = config.defaultAdminEmail?.trim().toLowerCase()
-  const configuredAdmin = config.adminEmail?.trim().toLowerCase()
-
-  return normalized === defaultAdmin || (configuredAdmin && normalized === configuredAdmin)
-}

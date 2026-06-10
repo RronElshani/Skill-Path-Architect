@@ -30,6 +30,7 @@ export default function Results() {
   const [llmBody, setLlmBody] = useState(personalizedSummary.body)
   const [llmLoading, setLlmLoading] = useState(false)
   const [llmError, setLlmError] = useState(null)
+  const [summarySource, setSummarySource] = useState(null)
 
   useEffect(() => {
     // Dynamically update llmBody if personalizedSummary changes (e.g. after loadPredictions completes)
@@ -71,9 +72,10 @@ export default function Results() {
     setLlmError(null)
 
     fetchLlmSummary(predictions, scores)
-      .then((summary) => {
+      .then(({ summary, source }) => {
         if (cancelled) return
         setLlmBody(summary)
+        setSummarySource(source)
         saveCachedSummary(summary, timestamp)
       })
       .catch((err) => {
@@ -130,8 +132,8 @@ export default function Results() {
 
       <AiResultsHero report={assessmentReport} topMatch={topMatch} />
 
-      <section className="grid gap-6 lg:grid-cols-12">
-        <div className="ai-panel p-6 lg:col-span-7">
+      <section className="grid gap-6 lg:grid-cols-12 lg:items-start">
+        <div className="ai-panel !overflow-visible p-6 lg:col-span-7">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 className="text-lg font-semibold text-slate-900">Neural intelligence map</h2>
@@ -139,7 +141,7 @@ export default function Results() {
             </div>
             <Link to="/results/intelligences" className="text-sm font-medium text-indigo-600 hover:text-violet-600">Deep analysis →</Link>
           </div>
-          <div className="mt-4"><IntelligenceRadarChart data={radarSnapshot} /></div>
+          <IntelligenceRadarChart data={radarSnapshot} className="mt-4" />
           <div className="mt-4 flex flex-wrap gap-2">
             {assessmentReport.dominantIntelligences.map((n) => (
               <span key={n} className="rounded-lg border border-indigo-100 bg-indigo-50/50 px-3 py-1.5 text-xs font-medium text-indigo-800">↑ {n}</span>
@@ -153,6 +155,7 @@ export default function Results() {
             highlights={llmLoading || llmError || llmBody !== personalizedSummary.body ? [] : personalizedSummary.highlights}
             loading={llmLoading}
             error={llmError}
+            source={summarySource}
           />
         </div>
       </section>

@@ -1,6 +1,6 @@
 import AiBadge, { AiSparkle } from './AiBadge.jsx'
 
-export default function AiSummaryPanel({ title, body, highlights = [], loading = false, error = null }) {
+export default function AiSummaryPanel({ title, body, highlights = [], loading = false, error = null, source = null }) {
   const paragraphs = typeof body === 'string'
     ? body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
     : []
@@ -55,7 +55,11 @@ export default function AiSummaryPanel({ title, body, highlights = [], loading =
         </>
       )}
 
-      <p className="mt-5 border-t border-indigo-100 pt-4 text-xs text-slate-400">Powered by LLM summary engine</p>
+      <p className="mt-5 border-t border-indigo-100 pt-4 text-xs text-slate-400">
+        {source === 'local'
+          ? 'Summary generated from your assessment profile (add LLM_API_KEY in ai/.env for AI-written text)'
+          : 'Powered by LLM summary engine'}
+      </p>
     </section>
   )
 }

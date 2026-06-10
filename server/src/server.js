@@ -42,6 +42,15 @@ app.use('/api', routes)
 app.use(errorHandler)
 
 const startServer = async () => {
+  if (config.nodeEnv === 'production') {
+    if (!config.jwt.accessSecret || !config.jwt.refreshSecret) {
+      console.error('JWT_ACCESS_SECRET and JWT_REFRESH_SECRET are required in production.')
+      process.exit(1)
+    }
+  } else if (!config.jwt.accessSecret || !config.jwt.refreshSecret) {
+    console.warn('Warning: JWT secrets are not set. Authentication will not work reliably.')
+  }
+
   await connectDB()
 
   app.listen(config.port, () => {

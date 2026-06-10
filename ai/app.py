@@ -182,7 +182,8 @@ def generate_summary():
             return jsonify({'error': 'scores object is required'}), 400
 
         summary = llm.generate_summary(predictions, scores)
-        return jsonify({'success': True, 'summary': summary})
+        source = 'llm' if os.environ.get('LLM_API_KEY') else 'local'
+        return jsonify({'success': True, 'summary': summary, 'source': source})
 
     except RuntimeError as e:
         return jsonify({'error': str(e)}), 502

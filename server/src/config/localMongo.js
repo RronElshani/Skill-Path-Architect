@@ -8,7 +8,10 @@ import { MongoBinary } from 'mongodb-memory-server-core'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export const LOCAL_DB_PATH = path.join(__dirname, '../../data/db')
 export const LOCAL_DB_PORT = 27018
-export const LOCAL_DB_URI = `mongodb://127.0.0.1:${LOCAL_DB_PORT}/ai-guidance-counselor`
+
+export function getLocalDbUri(databaseName = 'ai-guidance-counselor') {
+  return `mongodb://127.0.0.1:${LOCAL_DB_PORT}/${databaseName}`
+}
 
 function isPortOpen(port, host = '127.0.0.1') {
   return new Promise((resolve) => {
@@ -79,10 +82,12 @@ async function clearStaleLock(dbPath) {
  * Start a real mongod process backed by files on disk, or reuse one already
  * listening on LOCAL_DB_PORT. The process is detached so data survives app restarts.
  */
-export async function ensureLocalMongod() {
+export async function ensureLocalMongod(databaseName = 'ai-guidance-counselor') {
+  const uri = getLocalDbUri(databaseName)
+
   if (await isPortOpen(LOCAL_DB_PORT)) {
-    console.log(`Reusing local MongoDB on port ${LOCAL_DB_PORT}`)
-    return LOCAL_DB_URI
+    console.log(`Reusing local MongoDB on port ${LOCAL_DB_PORT} (${databaseName})`)
+    return uri
   }
 
   fs.mkdirSync(LOCAL_DB_PATH, { recursive: true })
@@ -104,6 +109,6 @@ export async function ensureLocalMongod() {
   proc.unref()
 
   await waitForPort(LOCAL_DB_PORT)
-  console.log(`Local MongoDB started on port ${LOCAL_DB_PORT} (${LOCAL_DB_PATH})`)
-  return LOCAL_DB_URI
+  console.log(`Local MongoDB started on port ${LOCAL_DB_PORT} (${LOCAL_DB_PATH}, db: ${databaseName})`)
+  return uri
 }
