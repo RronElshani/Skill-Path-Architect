@@ -91,6 +91,121 @@ body {
   .ai-panel-interactive:hover {
     box-shadow: 0 0 40px rgba(99, 102, 241, 0.15), 0 0 80px rgba(139, 92, 246, 0.08);
   }
+
+  .page-fade-out {
+    animation: page-fade-out 0.35s ease-in forwards;
+  }
+
+  .transition-loader-enter {
+    animation: fade-in 0.4s ease-out;
+  }
+
+  .transition-loader-ring {
+    animation: loader-ring-pulse 2.4s ease-in-out infinite;
+  }
+
+  .transition-loader-ring-delay {
+    animation-delay: 0.4s;
+  }
+
+  .transition-loader-ring-delay-2 {
+    animation-delay: 0.8s;
+  }
+
+  .transition-loader-node {
+    animation: loader-node-pulse 1.6s ease-in-out infinite;
+  }
+
+  .transition-loader-pulse {
+    animation: loader-node-pulse 1.2s ease-in-out infinite;
+  }
+
+  .transition-loader-edge {
+    animation: loader-edge-fade 1.8s ease-in-out infinite;
+  }
+
+  .results-animate-hidden {
+    opacity: 0;
+  }
+
+  .results-animate-hero {
+    animation: fade-in 0.55s ease-out forwards;
+  }
+
+  .results-animate-radar {
+    animation: slide-in-left 0.65s ease-out forwards;
+  }
+
+  .results-animate-summary {
+    animation: fade-in 0.55s ease-out forwards;
+  }
+}
+
+@keyframes page-fade-out {
+  to {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+
+@keyframes loader-ring-pulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+}
+
+@keyframes loader-node-pulse {
+  0%, 100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes loader-edge-fade {
+  0%, 100% {
+    stroke-opacity: 0.25;
+  }
+  50% {
+    stroke-opacity: 0.7;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-1.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 input[type='range'].slider-base {
