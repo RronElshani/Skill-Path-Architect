@@ -39,8 +39,7 @@ export default function Navbar() {
     .slice(0, 2)
     .join('')
 
-  // Filter nav items: if user is not logged in, show only public landing pages (Home, Methodology, About Us).
-  // If user is logged in, hide landing pages and only show Dashboard, Assessment, Results, Profile (and Admin Users if admin).
+  // If user is logged in, hide landing pages and only show Dashboard, Assessment, Results, Profile.
   let filteredNavItems = []
   if (!user) {
     filteredNavItems = mainNavItems.filter(
@@ -50,9 +49,6 @@ export default function Navbar() {
     filteredNavItems = mainNavItems.filter(
       (item) => item.to !== '/' && item.to !== '/methodology' && item.to !== '/about'
     )
-    if (user.role === 'admin') {
-      filteredNavItems.push({ to: '/admin/users', label: 'Admin Users' })
-    }
   }
 
   return (

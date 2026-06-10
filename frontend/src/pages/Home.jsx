@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import HeroSection from '../components/HeroSection.jsx'
 import SectionTitle from '../components/SectionTitle.jsx'
 import FeatureCard from '../components/FeatureCard.jsx'
+import HomeReviewsSection from '../components/HomeReviewsSection.jsx'
 
 const whatItDoes = [
   {
@@ -236,7 +237,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="pb-24">
+      <section className="pb-12">
         <div className="container-page">
           <div className="card relative overflow-hidden bg-gradient-to-br from-brand-700 to-brand-900 p-10 text-white sm:p-14">
             <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
@@ -264,6 +265,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <HomeReviewsSection />
     </>
   )
 }

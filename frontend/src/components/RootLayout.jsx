@@ -3,24 +3,27 @@ import Navbar from './Navbar.jsx'
 import Footer from './Footer.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
-const authRoutes = new Set(['/login', '/register'])
+const authRoutes = new Set(['/login', '/register', '/admin/login'])
 
 const appRoutes = [
   '/dashboard',
   '/assessment',
   '/results',
   '/profile',
-  '/admin/users'
 ]
 
 function isAppRoute(pathname) {
   return appRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`))
 }
 
+function isAdminRoute(pathname) {
+  return pathname === '/admin' || pathname === '/admin/login'
+}
+
 export default function RootLayout() {
   const { pathname } = useLocation()
   const { user, loading } = useAuth()
-  const hideChrome = authRoutes.has(pathname)
+  const hideChrome = authRoutes.has(pathname) || pathname === '/admin'
   const isApp = isAppRoute(pathname)
 
   if (loading) {
@@ -42,12 +45,16 @@ export default function RootLayout() {
     return <Navigate to="/login" replace />
   }
 
-  // Redirect authenticated users trying to access login/register pages
-  if (hideChrome && user) {
+  if (pathname === '/admin/login' && user?.role === 'admin') {
+    return <Navigate to="/admin" replace />
+  }
+
+  // Redirect authenticated users away from student login/register only
+  if ((pathname === '/login' || pathname === '/register') && user) {
     return <Navigate to="/dashboard" replace />
   }
 
-  if (hideChrome) {
+  if (hideChrome || isAdminRoute(pathname)) {
     return <Outlet />
   }
 

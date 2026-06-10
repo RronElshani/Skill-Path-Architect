@@ -1,16 +1,26 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Input from '../components/Input.jsx'
 import Button from '../components/Button.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import { loadRememberedEmail, saveRememberedEmail } from '../utils/rememberEmail.js'
 
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const savedEmail = loadRememberedEmail('login')
+    if (savedEmail) {
+      setEmail(savedEmail)
+      setRememberMe(true)
+    }
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -18,6 +28,7 @@ export default function Login() {
     setError(null)
     try {
       await login(email, password)
+      saveRememberedEmail(email, rememberMe, 'login')
       navigate('/dashboard')
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.')
@@ -113,7 +124,12 @@ export default function Login() {
 
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 text-sm text-slate-600">
-                <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                />
                 Remember me
               </label>
               <Link to="/login" className="text-sm font-medium text-brand-700 hover:text-brand-800">

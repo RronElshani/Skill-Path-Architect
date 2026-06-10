@@ -19,28 +19,49 @@ app = Flask(__name__)
 # Enable CORS for frontend integration
 CORS(app)
 
-# Load model, label encoder, and scaler once at server startup
-try:
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    MODEL_PATH = os.path.join(BASE_DIR, 'models', 'career_prediction_model.h5')
-    ENCODER_PATH = os.path.join(BASE_DIR, 'models', 'career_label_encoder.h5')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, 'models', 'career_prediction_model.h5')
+ENCODER_PATH = os.path.join(BASE_DIR, 'models', 'career_label_encoder.h5')
 
-    print(f"Loading model from: {MODEL_PATH}")
-    print(f"Loading label encoder from: {ENCODER_PATH}")
+model, encoder, scaler = None, None, None
+_load_error = None
 
-    model = predict.load_model(MODEL_PATH)
-    encoder = predict.load_encoder(ENCODER_PATH)
-    scaler = predict.build_scaler()
-    print("Model, LabelEncoder, and Scaler loaded successfully.")
-except Exception as e:
-    print(f"Error during startup loading: {e}", file=sys.stderr)
-    model, encoder, scaler = None, None, None
+
+def ensure_models_loaded():
+    """Load model files on first use so the service recovers after training."""
+    global model, encoder, scaler, _load_error
+
+    if model is not None and encoder is not None and scaler is not None:
+        return True
+
+    if not os.path.isfile(MODEL_PATH) or not os.path.isfile(ENCODER_PATH):
+        _load_error = (
+            'Model files not found. Run `npm run train:ai` from the project root, '
+            'then retry your assessment.'
+        )
+        return False
+
+    try:
+        print(f"Loading model from: {MODEL_PATH}")
+        print(f"Loading label encoder from: {ENCODER_PATH}")
+
+        model = predict.load_model(MODEL_PATH)
+        encoder = predict.load_encoder(ENCODER_PATH)
+        scaler = predict.build_scaler()
+        _load_error = None
+        print("Model, LabelEncoder, and Scaler loaded successfully.")
+        return True
+    except Exception as e:
+        _load_error = str(e)
+        print(f"Error during model loading: {e}", file=sys.stderr)
+        model, encoder, scaler = None, None, None
+        return False
 
 
 @app.route('/api/predict', methods=['POST'])
 def predict_career():
-    if model is None or encoder is None or scaler is None:
-        return jsonify({'error': 'Prediction service is unavailable because model files failed to load'}), 500
+    if not ensure_models_loaded():
+        return jsonify({'error': f'Prediction service is unavailable because model files failed to load: {_load_error}'}), 500
 
     try:
         data = request.get_json()
@@ -173,5 +194,6 @@ def generate_summary():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
+    ensure_models_loaded()
     print(f"Starting prediction API server on port {port}...")
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True, use_reloader=False)

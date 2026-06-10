@@ -34,6 +34,30 @@ const reviewService = {
     return await reviewRepository.findAll()
   },
 
+  formatPublicName(name) {
+    if (!name?.trim()) return 'A student'
+    const parts = name.trim().split(/\s+/)
+    if (parts.length === 1) return parts[0]
+    return `${parts[0]} ${parts[parts.length - 1][0]}.`
+  },
+
+  toPublicReview(review) {
+    return {
+      id: review._id,
+      displayName: this.formatPublicName(review.user?.name),
+      rating: review.rating,
+      satisfied: review.satisfied,
+      comment: review.comment || '',
+      topCareer: review.predictions?.[0]?.career || null,
+      createdAt: review.createdAt,
+    }
+  },
+
+  async getPublicReviews() {
+    const reviews = await reviewRepository.findAll()
+    return reviews.map((review) => this.toPublicReview(review))
+  },
+
   async deleteReview(id) {
     const review = await reviewRepository.deleteById(id)
     if (!review) {
