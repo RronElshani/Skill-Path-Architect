@@ -5,12 +5,18 @@ import { validate } from '../middleware/validate.js'
 import {
   assessmentValidation,
   adminUpdateUserValidation,
+  updateMeValidation,
+  changePasswordValidation,
 } from '../validators/userValidator.js'
 
 const router = Router()
 
 // All user routes require authentication
 router.use(authenticate)
+
+// Self-service profile routes (must precede the admin "/:id" routes)
+router.patch('/me', updateMeValidation, validate, userController.updateMe)
+router.patch('/me/password', changePasswordValidation, validate, userController.changePassword)
 
 // User assessment routes
 router.post('/assessment', assessmentValidation, validate, userController.saveAssessment)

@@ -1,47 +1,37 @@
-export const currentUser = {
-  id: 'usr_001',
-  name: 'Adelina Krasniqi',
-  email: 'adelina.krasniqi@university.edu',
-  role: 'Student',
-  joined: 'September 2025',
-  location: 'Pristina, Kosovo',
-  headline: 'Aspiring engineer focused on human-centered technology',
-  strengths: [
-    'Structured analytical reasoning',
-    'Strong visual and spatial pattern recognition',
-    'Independent learning and reflection',
-    'Clear written communication'
-  ],
-  savedRecommendations: [
-    { id: 'software-engineer', name: 'Software Engineer', confidence: 94 },
-    { id: 'architect', name: 'Architect', confidence: 88 },
-    { id: 'data-analyst', name: 'Data Analyst', confidence: 79 }
-  ]
+import { API_URL } from '../config/api.js'
+import { authFetch } from '../utils/authFetch.js'
+
+/** Update the signed-in user's identity / preferences (name, email, twoFactorEnabled). */
+export async function updateProfile(fields) {
+  const response = await authFetch(`${API_URL}/users/me`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(fields),
+  })
+
+  const data = await response.json()
+  if (!response.ok) {
+    throw new Error(data.message || data.errors?.[0]?.message || 'Failed to update profile')
+  }
+  return data.data
 }
 
-export const recentActivity = [
-  {
-    id: 'act_001',
-    label: 'Completed the Multiple Intelligences assessment',
-    timestamp: '2 days ago',
-    tone: 'brand'
-  },
-  {
-    id: 'act_002',
-    label: 'Saved Software Engineer to favorite careers',
-    timestamp: '2 days ago',
-    tone: 'emerald'
-  },
-  {
-    id: 'act_003',
-    label: 'Updated personal profile information',
-    timestamp: '5 days ago',
-    tone: 'slate'
-  },
-  {
-    id: 'act_004',
-    label: 'Reviewed personalized summary report',
-    timestamp: '1 week ago',
-    tone: 'amber'
+/** Change the signed-in user's password (verifies the current one server-side). */
+export async function changePassword({ currentPassword, newPassword }) {
+  const response = await authFetch(`${API_URL}/users/me/password`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ currentPassword, newPassword }),
+  })
+
+  const data = await response.json()
+  if (!response.ok) {
+    throw new Error(data.message || data.errors?.[0]?.message || 'Failed to change password')
   }
-]
+  return true
+}
+
+/** Convenience wrapper for the 2FA preference toggle. */
+export function setTwoFactor(enabled) {
+  return updateProfile({ twoFactorEnabled: enabled })
+}

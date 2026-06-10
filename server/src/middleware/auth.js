@@ -33,6 +33,8 @@ export const authenticate = async (req, res, next) => {
       email: user.email,
       role: user.role,
       assessment: user.assessment,
+      twoFactorEnabled: user.twoFactorEnabled,
+      createdAt: user.createdAt,
     }
 
     next()
