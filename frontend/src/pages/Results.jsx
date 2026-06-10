@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams, useLocation, useNavigate } from 'react-router-dom'
 import AiResultsHero from '../components/ai/AiResultsHero.jsx'
 import IntelligenceRadarChart from '../components/ai/IntelligenceRadarChart.jsx'
 import AiSummaryPanel from '../components/ai/AiSummaryPanel.jsx'
@@ -13,8 +13,22 @@ import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Results() {
   const { user } = useAuth()
+  const location = useLocation()
+  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const showSample = searchParams.get('sample') === 'true'
+
+  const shouldAnimate = Boolean(location.state?.animateEntry) && !showSample
+  const [animateIn, setAnimateIn] = useState(!shouldAnimate)
+
+  useEffect(() => {
+    if (!shouldAnimate) return undefined
+
+    const frame = requestAnimationFrame(() => setAnimateIn(true))
+    navigate(location.pathname + location.search, { replace: true, state: {} })
+
+    return () => cancelAnimationFrame(frame)
+  }, [shouldAnimate, navigate, location.pathname, location.search])
 
   // Dynamically load predictions and scores
   loadPredictions(user?.assessment, showSample)
@@ -113,6 +127,13 @@ export default function Results() {
     )
   }
 
+  const anim = (kind) => {
+    if (!shouldAnimate) return {}
+    return {
+      className: animateIn ? `results-animate-${kind}` : 'results-animate-hidden',
+    }
+  }
+
   return (
     <div className="ai-mesh -mx-4 space-y-8 rounded-2xl px-4 py-2 sm:-mx-6 sm:px-6">
       {showSample && (
@@ -130,10 +151,15 @@ export default function Results() {
         </div>
       )}
 
-      <AiResultsHero report={assessmentReport} topMatch={topMatch} />
+      <div {...anim('hero')}>
+        <AiResultsHero report={assessmentReport} topMatch={topMatch} />
+      </div>
 
       <section className="grid gap-6 lg:grid-cols-12 lg:items-start">
-        <div className="ai-panel !overflow-visible p-6 lg:col-span-7">
+        <div
+          className={`ai-panel !overflow-visible p-6 lg:col-span-7 ${animateIn || !shouldAnimate ? '' : 'results-animate-hidden'} ${animateIn && shouldAnimate ? 'results-animate-radar' : ''}`}
+          style={shouldAnimate ? { animationDelay: '120ms' } : undefined}
+        >
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 className="text-lg font-semibold text-slate-900">Neural intelligence map</h2>
@@ -148,7 +174,10 @@ export default function Results() {
             ))}
           </div>
         </div>
-        <div className="lg:col-span-5">
+        <div
+          className={`lg:col-span-5 ${animateIn || !shouldAnimate ? '' : 'results-animate-hidden'} ${animateIn && shouldAnimate ? 'results-animate-summary' : ''}`}
+          style={shouldAnimate ? { animationDelay: '220ms' } : undefined}
+        >
           <AiSummaryPanel
             title={personalizedSummary.title}
             body={llmBody}
@@ -160,7 +189,10 @@ export default function Results() {
         </div>
       </section>
 
-      <section>
+      <section
+        className={animateIn || !shouldAnimate ? '' : 'results-animate-hidden'}
+        style={shouldAnimate ? { animation: animateIn ? 'fade-in 0.55s ease-out forwards' : undefined, animationDelay: '280ms' } : undefined}
+      >
         <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
@@ -176,7 +208,17 @@ export default function Results() {
         </div>
         <div className="grid gap-4">
           {careerRecommendations.map((career, i) => (
-            <AiCareerCard key={career.id} rank={i + 1} career={career} />
+            <div
+              key={career.id}
+              className={animateIn || !shouldAnimate ? '' : 'results-animate-hidden'}
+              style={
+                shouldAnimate && animateIn
+                  ? { animation: 'slide-up 0.5s ease-out forwards', animationDelay: `${360 + i * 90}ms` }
+                  : undefined
+              }
+            >
+              <AiCareerCard rank={i + 1} career={career} />
+            </div>
           ))}
         </div>
       </section>
