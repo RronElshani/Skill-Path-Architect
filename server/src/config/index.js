@@ -13,6 +13,7 @@ const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   mongodbUri,
   mongodbDatabase: process.env.MONGODB_DATABASE || parseDatabaseName(mongodbUri),
+  preferLocalMongo: process.env.PREFER_LOCAL_MONGO !== 'false',
   jwt: {
     accessSecret: process.env.JWT_ACCESS_SECRET,
     refreshSecret: process.env.JWT_REFRESH_SECRET,

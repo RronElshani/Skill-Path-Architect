@@ -54,18 +54,31 @@ export function AuthProvider({ children }) {
   }, [clearSession])
 
   const login = async (email, password) => {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    })
+    const normalizedEmail = email.trim().toLowerCase()
+
+    let response
+    try {
+      response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: normalizedEmail, password }),
+      })
+    } catch {
+      throw new Error(
+        `Cannot reach the API at ${API_URL}. Make sure the backend is running (npm run dev) and MongoDB has started.`
+      )
+    }
 
     const result = await response.json()
 
     if (!response.ok) {
-      throw new Error(result.message || 'Login failed')
+      const hint =
+        response.status === 401
+          ? ' If you recently restarted the server, your account may have been cleared — try registering again.'
+          : ''
+      throw new Error((result.message || 'Login failed') + hint)
     }
 
     localStorage.setItem('accessToken', result.accessToken)
@@ -75,13 +88,22 @@ export function AuthProvider({ children }) {
   }
 
   const register = async (name, email, password) => {
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, email, password }),
-    })
+    const normalizedEmail = email.trim().toLowerCase()
+
+    let response
+    try {
+      response = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email: normalizedEmail, password }),
+      })
+    } catch {
+      throw new Error(
+        `Cannot reach the API at ${API_URL}. Make sure the backend is running (npm run dev) and MongoDB has started.`
+      )
+    }
 
     const result = await response.json()
 
@@ -89,7 +111,7 @@ export function AuthProvider({ children }) {
       throw new Error(result.message || result.errors?.[0]?.message || 'Registration failed')
     }
 
-    return await login(email, password)
+    return await login(normalizedEmail, password)
   }
 
   const logout = async () => {
