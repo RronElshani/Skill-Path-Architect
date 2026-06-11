@@ -3,7 +3,7 @@ import Navbar from './Navbar.jsx'
 import Footer from './Footer.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
-const authRoutes = new Set(['/login', '/register', '/admin/login'])
+const authRoutes = new Set(['/login', '/register', '/admin/login', '/forgot-password'])
 
 const appRoutes = [
   '/dashboard',
@@ -49,8 +49,8 @@ export default function RootLayout() {
     return <Navigate to="/admin" replace />
   }
 
-  // Redirect authenticated users away from student login/register only
-  if ((pathname === '/login' || pathname === '/register') && user) {
+  // Redirect authenticated users away from student login/register/forgot-password
+  if ((pathname === '/login' || pathname === '/register' || pathname === '/forgot-password') && user) {
     return <Navigate to="/dashboard" replace />
   }
 
