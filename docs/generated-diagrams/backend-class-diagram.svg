@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="980" viewBox="0 0 1500 980">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 4 L 0 8 z" fill="#17202a"/>
+    </marker>
+    <style>
+      .page-title { font: 700 28px Arial, sans-serif; fill: #17202a; }
+      .subtitle { font: 400 14px Arial, sans-serif; fill: #5c6670; }
+      .title { font: 700 15px Arial, sans-serif; fill: #17202a; }
+      .body { font: 400 12px Arial, sans-serif; fill: #17202a; }
+      .strong { font-weight: 700; }
+      .note { font: 400 11px Arial, sans-serif; fill: #5c6670; }
+      .section { font: 700 18px Arial, sans-serif; fill: #17202a; }
+    </style>
+  </defs>
+  <rect width="100%" height="100%" fill="#f6f8fb"/>
+  <text x="40" y="44" class="page-title">Backend Class Diagram</text>
+  <text x="40" y="68" class="subtitle">Express controllers delegate to services, repositories, Mongoose models, and the Flask AI service.</text>
+  
+  <text x="70" y="120" class="section">Controllers</text>
+  
+    <rect x="50" y="145" width="260" height="155" rx="8" fill="#dcecff" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="64" y="171" class="title">AuthController</text>
+    <line x1="50" y1="181" x2="310" y2="181" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="64" y="193" class="body">register()</text>
+<text x="64" y="211" class="body">login()</text>
+<text x="64" y="229" class="body">refreshToken()</text>
+<text x="64" y="247" class="body">logout()</text>
+<text x="64" y="265" class="body">getMe()</text>
+  
+  
+    <rect x="50" y="330" width="260" height="175" rx="8" fill="#dcecff" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="64" y="356" class="title">UserController</text>
+    <line x1="50" y1="366" x2="310" y2="366" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="64" y="378" class="body">getAllUsers()</text>
+<text x="64" y="396" class="body">getUserById()</text>
+<text x="64" y="414" class="body">updateUser()</text>
+<text x="64" y="432" class="body">deleteUser()</text>
+<text x="64" y="450" class="body">saveAssessment()</text>
+<text x="64" y="468" class="body">getAssessment()</text>
+  
+  
+    <rect x="50" y="535" width="260" height="155" rx="8" fill="#dcecff" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="64" y="561" class="title">ReviewController</text>
+    <line x1="50" y1="571" x2="310" y2="571" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="64" y="583" class="body">submit()</text>
+<text x="64" y="601" class="body">getMine()</text>
+<text x="64" y="619" class="body">getAll()</text>
+<text x="64" y="637" class="body">getPublic()</text>
+<text x="64" y="655" class="body">deleteReview()</text>
+  
+  
+    <rect x="50" y="720" width="260" height="140" rx="8" fill="#dcecff" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="64" y="746" class="title">ChatController</text>
+    <line x1="50" y1="756" x2="310" y2="756" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="64" y="768" class="body">sendMessage()</text>
+<text x="64" y="786" class="body">getSessions()</text>
+<text x="64" y="804" class="body">getMessages()</text>
+<text x="64" y="822" class="body">deleteSession()</text>
+  
+
+  <text x="410" y="120" class="section">Services</text>
+  
+    <rect x="390" y="145" width="280" height="155" rx="8" fill="#def7e8" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="404" y="171" class="title">AuthService</text>
+    <line x1="390" y1="181" x2="670" y2="181" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="404" y="193" class="body">register()</text>
+<text x="404" y="211" class="body">login()</text>
+<text x="404" y="229" class="body">refreshToken()</text>
+<text x="404" y="247" class="body">logout()</text>
+<text x="404" y="265" class="body">generateAccessToken()</text>
+  
+  
+    <rect x="390" y="330" width="280" height="175" rx="8" fill="#def7e8" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="404" y="356" class="title">UserService</text>
+    <line x1="390" y1="366" x2="670" y2="366" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="404" y="378" class="body">getUserById()</text>
+<text x="404" y="396" class="body">getAllUsers()</text>
+<text x="404" y="414" class="body">updateUser()</text>
+<text x="404" y="432" class="body">deleteUser()</text>
+<text x="404" y="450" class="body">saveAssessment()</text>
+<text x="404" y="468" class="body">getAssessment()</text>
+  
+  
+    <rect x="390" y="535" width="280" height="155" rx="8" fill="#def7e8" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="404" y="561" class="title">ReviewService</text>
+    <line x1="390" y1="571" x2="670" y2="571" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="404" y="583" class="body">submitReview()</text>
+<text x="404" y="601" class="body">getMyReviews()</text>
+<text x="404" y="619" class="body">getAllReviews()</text>
+<text x="404" y="637" class="body">getPublicReviews()</text>
+<text x="404" y="655" class="body">deleteReview()</text>
+  
+  
+    <rect x="390" y="720" width="280" height="170" rx="8" fill="#def7e8" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="404" y="746" class="title">ChatService</text>
+    <line x1="390" y1="756" x2="670" y2="756" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="404" y="768" class="body">resolveSession()</text>
+<text x="404" y="786" class="body">requestCompletion()</text>
+<text x="404" y="804" class="body">sendMessage()</text>
+<text x="404" y="822" class="body">getSessions()</text>
+<text x="404" y="840" class="body">getMessages()</text>
+<text x="404" y="858" class="body">deleteSession()</text>
+  
+
+  <text x="770" y="120" class="section">Repositories</text>
+  
+    <rect x="750" y="145" width="295" height="175" rx="8" fill="#fff1cf" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="764" y="171" class="title">UserRepository</text>
+    <line x1="750" y1="181" x2="1045" y2="181" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="764" y="193" class="body">create()</text>
+<text x="764" y="211" class="body">findByEmail()</text>
+<text x="764" y="229" class="body">findById()</text>
+<text x="764" y="247" class="body">updateRefreshToken()</text>
+<text x="764" y="265" class="body">updateAssessment()</text>
+<text x="764" y="283" class="body">deleteById()</text>
+  
+  
+    <rect x="750" y="535" width="295" height="125" rx="8" fill="#fff1cf" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="764" y="561" class="title">ReviewRepository</text>
+    <line x1="750" y1="571" x2="1045" y2="571" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="764" y="583" class="body">create()</text>
+<text x="764" y="601" class="body">findByUserId()</text>
+<text x="764" y="619" class="body">findAll()</text>
+<text x="764" y="637" class="body">deleteById()</text>
+  
+  
+    <rect x="750" y="720" width="295" height="170" rx="8" fill="#fff1cf" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="764" y="746" class="title">ChatRepository</text>
+    <line x1="750" y1="756" x2="1045" y2="756" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="764" y="768" class="body">createSession()</text>
+<text x="764" y="786" class="body">findSessionById()</text>
+<text x="764" y="804" class="body">findSessionsByUserId()</text>
+<text x="764" y="822" class="body">createMessage()</text>
+<text x="764" y="840" class="body">findMessagesBySession()</text>
+<text x="764" y="858" class="body">deleteMessagesBySession()</text>
+  
+
+  <text x="1130" y="120" class="section">Models and AI</text>
+  
+    <rect x="1110" y="145" width="300" height="175" rx="8" fill="#eadfff" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="1124" y="171" class="title">User</text>
+    <line x1="1110" y1="181" x2="1410" y2="181" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="1124" y="193" class="body">name, email, password</text>
+<text x="1124" y="211" class="body">role, refreshToken</text>
+<text x="1124" y="229" class="body">assessment.scores</text>
+<text x="1124" y="247" class="body">assessment.predictions</text>
+<text x="1124" y="265" class="body">summary, completedAt</text>
+  
+  
+    <rect x="1110" y="370" width="300" height="135" rx="8" fill="#eadfff" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="1124" y="396" class="title">Review</text>
+    <line x1="1110" y1="406" x2="1410" y2="406" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="1124" y="418" class="body">user ref</text>
+<text x="1124" y="436" class="body">rating, satisfied</text>
+<text x="1124" y="454" class="body">comment</text>
+<text x="1124" y="472" class="body">predictions snapshot</text>
+  
+  
+    <rect x="1110" y="555" width="300" height="135" rx="8" fill="#eadfff" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="1124" y="581" class="title">ChatSession</text>
+    <line x1="1110" y1="591" x2="1410" y2="591" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="1124" y="603" class="body">userId ref</text>
+<text x="1124" y="621" class="body">title</text>
+<text x="1124" y="639" class="body">lastMessageAt</text>
+  
+  
+    <rect x="1110" y="735" width="300" height="135" rx="8" fill="#eadfff" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="1124" y="761" class="title">ChatMessage</text>
+    <line x1="1110" y1="771" x2="1410" y2="771" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="1124" y="783" class="body">sessionId ref</text>
+<text x="1124" y="801" class="body">sender: user | assistant</text>
+<text x="1124" y="819" class="body">content</text>
+  
+  
+    <rect x="1110" y="890" width="300" height="70" rx="8" fill="#ffe2df" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="1124" y="916" class="title">Flask AI Service</text>
+    <line x1="1110" y1="926" x2="1410" y2="926" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="1124" y="938" class="body">predictCareer(), generateSummary(), chatReply()</text>
+  
+
+  
+    <path d="M 310 222 L 390 222" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    
+  
+  
+    <path d="M 310 417 L 390 417" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    
+  
+  
+    <path d="M 310 612 L 390 612" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    
+  
+  
+    <path d="M 310 790 L 390 790" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    
+  
+  
+    <path d="M 670 222 L 750 222" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    
+  
+  
+    <path d="M 670 417 L 750 222" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    
+  
+  
+    <path d="M 670 612 L 750 598" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    
+  
+  
+    <path d="M 670 805 L 750 805" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    
+  
+  
+    <path d="M 1045 222 L 1110 222" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    
+  
+  
+    <path d="M 1045 598 L 1110 437" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    
+  
+  
+    <path d="M 1045 777 L 1110 622" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    
+  
+  
+    <path d="M 1045 833 L 1110 802" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    
+  
+  
+    <path d="M 670 460 L 1110 925" fill="none" stroke="#17202a" stroke-width="1.4" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+    <text x="890" y="684.5" text-anchor="middle" class="note">calls</text>
+  
+  
+    <path d="M 670 775 L 1110 925" fill="none" stroke="#17202a" stroke-width="1.4" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+    <text x="890" y="842" text-anchor="middle" class="note">calls</text>
+  
+  
+</svg>

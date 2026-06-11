@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="980" viewBox="0 0 1500 980">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M 0 0 L 10 4 L 0 8 z" fill="#17202a"/>
+    </marker>
+    <style>
+      .page-title { font: 700 28px Arial, sans-serif; fill: #17202a; }
+      .subtitle { font: 400 14px Arial, sans-serif; fill: #5c6670; }
+      .title { font: 700 15px Arial, sans-serif; fill: #17202a; }
+      .body { font: 400 12px Arial, sans-serif; fill: #17202a; }
+      .strong { font-weight: 700; }
+      .note { font: 400 11px Arial, sans-serif; fill: #5c6670; }
+      .section { font: 700 18px Arial, sans-serif; fill: #17202a; }
+    </style>
+  </defs>
+  <rect width="100%" height="100%" fill="#f6f8fb"/>
+  <text x="40" y="44" class="page-title">MongoDB Collection Schema Diagram</text>
+  <text x="40" y="68" class="subtitle">Collections, embedded documents, references, and cardinality in the Mongoose data model.</text>
+  
+  
+    <rect x="70" y="130" width="335" height="260" rx="8" fill="#eadfff" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="84" y="156" class="title">users</text>
+    <line x1="70" y1="166" x2="405" y2="166" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="84" y="178" class="body">_id: ObjectId PK</text>
+<text x="84" y="196" class="body">name: String required</text>
+<text x="84" y="214" class="body">email: String unique</text>
+<text x="84" y="232" class="body">password: String select:false</text>
+<text x="84" y="250" class="body">role: user | admin</text>
+<text x="84" y="268" class="body">refreshToken: String select:false</text>
+<text x="84" y="286" class="body">assessment: EmbeddedAssessment</text>
+<text x="84" y="304" class="body">createdAt, updatedAt</text>
+  
+  
+    <rect x="515" y="130" width="395" height="300" rx="8" fill="#dcecff" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="529" y="156" class="title">assessment embedded in users</text>
+    <line x1="515" y1="166" x2="910" y2="166" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="529" y="178" class="body">scores.language_skills: Number</text>
+<text x="529" y="196" class="body">scores.math_and_logic: Number</text>
+<text x="529" y="214" class="body">scores.spatial_awareness: Number</text>
+<text x="529" y="232" class="body">scores.physical_prowess: Number</text>
+<text x="529" y="250" class="body">scores.musical_ability: Number</text>
+<text x="529" y="268" class="body">scores.collaboration_skills: Number</text>
+<text x="529" y="286" class="body">scores.self_awareness: Number</text>
+<text x="529" y="304" class="body">scores.sustainability_focus: Number</text>
+<text x="529" y="322" class="body">predictions: Prediction[]</text>
+<text x="529" y="340" class="body">summary: String</text>
+<text x="529" y="358" class="body">completedAt: Date</text>
+  
+  
+    <rect x="1035" y="180" width="300" height="135" rx="8" fill="#def7e8" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="1049" y="206" class="title">Prediction subdocument</text>
+    <line x1="1035" y1="216" x2="1335" y2="216" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="1049" y="228" class="body">rank: Number</text>
+<text x="1049" y="246" class="body">career: String</text>
+<text x="1049" y="264" class="body">confidence: Number</text>
+  
+
+  
+    <rect x="70" y="520" width="335" height="220" rx="8" fill="#fff1cf" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="84" y="546" class="title">reviews</text>
+    <line x1="70" y1="556" x2="405" y2="556" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="84" y="568" class="body">_id: ObjectId PK</text>
+<text x="84" y="586" class="body">user: ObjectId ref User</text>
+<text x="84" y="604" class="body">rating: Number min1 max5</text>
+<text x="84" y="622" class="body">satisfied: Boolean</text>
+<text x="84" y="640" class="body">comment: String max1000</text>
+<text x="84" y="658" class="body">predictions: Prediction[]</text>
+<text x="84" y="676" class="body">createdAt, updatedAt</text>
+  
+  
+    <rect x="515" y="520" width="335" height="180" rx="8" fill="#daf6f4" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="529" y="546" class="title">chat_sessions</text>
+    <line x1="515" y1="556" x2="850" y2="556" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="529" y="568" class="body">_id: ObjectId PK</text>
+<text x="529" y="586" class="body">userId: ObjectId ref User</text>
+<text x="529" y="604" class="body">title: String max120</text>
+<text x="529" y="622" class="body">lastMessageAt: Date</text>
+<text x="529" y="640" class="body">createdAt, updatedAt</text>
+  
+  
+    <rect x="990" y="520" width="335" height="180" rx="8" fill="#ffe2df" stroke="#bcc7d4" stroke-width="1.4"/>
+    <text x="1004" y="546" class="title">chat_messages</text>
+    <line x1="990" y1="556" x2="1325" y2="556" stroke="#bcc7d4" stroke-width="1"/>
+    <text x="1004" y="568" class="body">_id: ObjectId PK</text>
+<text x="1004" y="586" class="body">sessionId: ObjectId ref ChatSession</text>
+<text x="1004" y="604" class="body">sender: user | assistant</text>
+<text x="1004" y="622" class="body">content: String max4000</text>
+<text x="1004" y="640" class="body">createdAt, updatedAt</text>
+  
+
+  
+    <path d="M 405 260 L 515 260" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    <text x="460" y="252" text-anchor="middle" class="note">embeds 0..1</text>
+  
+  
+    <path d="M 910 280 L 1035 245" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    <text x="972.5" y="254.5" text-anchor="middle" class="note">has many</text>
+  
+  
+    <path d="M 405 630 L 1035 300" fill="none" stroke="#17202a" stroke-width="1.4" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+    <text x="720" y="457" text-anchor="middle" class="note">stores snapshot</text>
+  
+  
+    <path d="M 240 390 L 240 520" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    <text x="240" y="447" text-anchor="middle" class="note">writes 0..*</text>
+  
+  
+    <path d="M 405 260 L 515 610" fill="none" stroke="#17202a" stroke-width="1.4" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+    <text x="460" y="427" text-anchor="middle" class="note">owns 0..*</text>
+  
+  
+    <path d="M 850 610 L 990 610" fill="none" stroke="#17202a" stroke-width="1.4"  marker-end="url(#arrow)"/>
+    <text x="920" y="602" text-anchor="middle" class="note">contains 0..*</text>
+  
+  
+</svg>
