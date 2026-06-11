@@ -10,14 +10,15 @@
  */
 import dotenv from 'dotenv'
 import path from 'path'
-import mongoose from 'mongoose'
 import { fileURLToPath } from 'url'
-import connectDB from '../src/config/db.js'
-import careerRepository from '../src/repositories/careerRepository.js'
 import careers from './career-data.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 dotenv.config({ path: path.join(__dirname, '..', '.env') })
+
+const mongoose = (await import('mongoose')).default
+const connectDB = (await import('../src/config/db.js')).default
+const careerRepository = (await import('../src/repositories/careerRepository.js')).default
 
 /** URL-safe slug. Must match the frontend's slug rule so predictions link up. */
 export function slugify(name) {

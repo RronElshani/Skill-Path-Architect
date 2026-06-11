@@ -1,11 +1,12 @@
 import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import connectDB from '../src/config/db.js'
-import userRepository from '../src/repositories/userRepository.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 dotenv.config({ path: path.join(__dirname, '..', '.env') })
+
+const connectDB = (await import('../src/config/db.js')).default
+const userRepository = (await import('../src/repositories/userRepository.js')).default
 
 const email = process.argv[2]?.trim().toLowerCase()
 
