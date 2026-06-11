@@ -70,6 +70,8 @@ const authService = {
         email: user.email,
         role: user.role,
         assessment: user.assessment,
+        twoFactorEnabled: user.twoFactorEnabled,
+        createdAt: user.createdAt,
       },
     }
   },

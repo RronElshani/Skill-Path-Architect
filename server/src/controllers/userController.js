@@ -42,6 +42,31 @@ const userController = {
     }
   },
 
+  async updateMe(req, res, next) {
+    try {
+      const user = await userService.updateMe(req.user.id, req.body)
+      res.status(200).json({
+        success: true,
+        message: 'Profile updated successfully',
+        data: user,
+      })
+    } catch (error) {
+      next(error)
+    }
+  },
+
+  async changePassword(req, res, next) {
+    try {
+      await userService.changePassword(req.user.id, req.body)
+      res.status(200).json({
+        success: true,
+        message: 'Password updated successfully',
+      })
+    } catch (error) {
+      next(error)
+    }
+  },
+
   async deleteUser(req, res, next) {
     try {
       await userService.deleteUser(req.params.id)
