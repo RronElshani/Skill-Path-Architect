@@ -407,7 +407,7 @@ function getCareerDetails(careerName, percentScores) {
 }
 
 // Load and populate predictions from localStorage or user context
-export function loadPredictions(userAssessment, showSample = false) {
+export function loadPredictions(userAssessment, showSample = false, isLoggedIn = false) {
   try {
     let data = null
 
@@ -431,7 +431,7 @@ export function loadPredictions(userAssessment, showSample = false) {
         timestamp: defaultReport.completedAt,
         studentName: defaultReport.studentName
       }
-    } else if (userAssessment?.scores) {
+    } else if (userAssessment?.completedAt && userAssessment?.scores) {
       data = {
         scores: userAssessment.scores,
         predictions: userAssessment.predictions || [],
@@ -439,7 +439,7 @@ export function loadPredictions(userAssessment, showSample = false) {
         timestamp: userAssessment.completedAt || new Date().toISOString(),
         studentName: userAssessment.name || userAssessment.studentName || 'Student Profile',
       }
-    } else {
+    } else if (!isLoggedIn) {
       const raw = localStorage.getItem('career_predictions')
       if (raw) {
         data = JSON.parse(raw)

@@ -14,7 +14,7 @@ export default function IntelligenceReport() {
   useEffect(() => {
     if (loading) return
 
-    loadPredictions(user?.assessment)
+    loadPredictions(user?.assessment, false, !!user)
     loadScores(user?.assessment, false, !!user)
     setReady(true)
   }, [user, loading])

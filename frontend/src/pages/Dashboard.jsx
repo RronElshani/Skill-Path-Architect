@@ -5,6 +5,7 @@ import CareerCard from '../components/CareerCard.jsx'
 import SummaryCard from '../components/SummaryCard.jsx'
 import { intelligenceDimensions, progressMilestones, loadScores } from '../services/intelligenceScores.js'
 import { careerRecommendations, personalizedSummary, loadPredictions } from '../services/careerRecommendations.js'
+import { hasCompletedAssessment, hasCareerMatches } from '../services/assessmentState.js'
 import { useAuth } from '../context/AuthContext.jsx'
 
 const toneMap = {
@@ -18,8 +19,11 @@ export default function Dashboard() {
   const { user } = useAuth()
 
   // Dynamically load the user's predictions and scores
-  loadPredictions(user?.assessment)
+  loadPredictions(user?.assessment, false, !!user)
   loadScores(user?.assessment, false, !!user)
+
+  const hasAssessment = hasCompletedAssessment(user?.assessment, { isLoggedIn: !!user })
+  const hasCareers = hasCareerMatches(user?.assessment, { isLoggedIn: !!user })
 
   const topThreeIntelligences = [...intelligenceDimensions]
     .sort((a, b) => b.score - a.score)
@@ -34,8 +38,8 @@ export default function Dashboard() {
   const savedCount = savedCareersList.length
 
   // Calculate milestones
-  const isAssessmentFinished = !!(user?.assessment?.scores) || !!localStorage.getItem('career_predictions')
-  const isCareersGenerated = !!(user?.assessment?.predictions && user?.assessment?.predictions.length > 0) || !!localStorage.getItem('career_predictions')
+  const isAssessmentFinished = hasAssessment
+  const isCareersGenerated = hasCareers
   const isSummaryReviewed = isCareersGenerated && (localStorage.getItem('summary_reviewed') === 'true')
 
   // Milestones count
@@ -124,17 +128,24 @@ export default function Dashboard() {
           <section className="card relative overflow-hidden bg-gradient-to-r from-white to-brand-50/60 p-6 sm:p-8">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <span className="badge bg-brand-50 text-brand-700">Welcome back</span>
+                <span className="badge bg-brand-50 text-brand-700">
+                  {hasAssessment ? 'Welcome back' : 'Getting started'}
+                </span>
                 <h1 className="mt-3 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
                   Hello, {user?.name ? user.name.split(' ')[0] : 'Student'}.
                 </h1>
                 <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
-                  Your latest report is ready. Review your dominant intelligences, revisit recommended careers and continue refining your direction.
+                  {hasAssessment
+                    ? 'Your latest report is ready. Review your dominant intelligences, revisit recommended careers and continue refining your direction.'
+                    : 'You are one step away from your personalized career blueprint. Take the 8-dimension Multiple Intelligences assessment to unlock AI-ranked career matches and your neural profile.'}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Link to="/assessment" className="btn-secondary">Retake assessment</Link>
-                <Link to="/results" className="btn-primary">View full report</Link>
+                {hasAssessment ? (
+                  <Link to="/results" className="btn-primary">View full report</Link>
+                ) : (
+                  <Link to="/assessment" className="btn-primary">Take assessment</Link>
+                )}
               </div>
             </div>
           </section>
@@ -202,8 +213,17 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : (
-              <div className="card mt-5 p-6 text-center text-slate-500">
-                No intelligence data available yet. Please complete the assessment.
+              <div className="card mt-5 flex flex-col items-center gap-4 p-8 text-center sm:flex-row sm:text-left">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-2xl">
+                  🧠
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-base font-semibold text-slate-900">No intelligence profile yet</h3>
+                  <p className="mt-1 text-sm text-slate-600">
+                    Rate yourself across eight Gardner dimensions to see your strengths and AI career matches.
+                  </p>
+                </div>
+                <Link to="/assessment" className="btn-primary shrink-0">Take assessment</Link>
               </div>
             )}
           </section>
@@ -231,8 +251,17 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : (
-              <div className="card mt-5 p-6 text-center text-slate-500">
-                No career recommendations available. Please complete the assessment to find career matches.
+              <div className="card mt-5 flex flex-col items-center gap-4 p-8 text-center sm:flex-row sm:text-left">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-2xl">
+                  🎯
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-base font-semibold text-slate-900">Career matches not generated yet</h3>
+                  <p className="mt-1 text-sm text-slate-600">
+                    Complete the assessment first — our model will rank careers aligned to your cognitive profile.
+                  </p>
+                </div>
+                <Link to="/assessment" className="btn-primary shrink-0">Take assessment</Link>
               </div>
             )}
           </section>

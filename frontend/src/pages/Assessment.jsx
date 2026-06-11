@@ -31,7 +31,7 @@ export default function Assessment() {
   })
 
   useEffect(() => {
-    if (user?.assessment?.scores) {
+    if (user?.assessment?.completedAt && user.assessment.scores) {
       setScores(user.assessment.scores)
     } else {
       const saved = localStorage.getItem('saved_scores') || localStorage.getItem('career_predictions')

@@ -81,6 +81,11 @@ export function AuthProvider({ children }) {
       throw new Error((result.message || 'Login failed') + hint)
     }
 
+    if (!result.user?.assessment?.completedAt) {
+      localStorage.removeItem('career_predictions')
+      localStorage.removeItem('summary_reviewed')
+    }
+
     localStorage.setItem('accessToken', result.accessToken)
     localStorage.setItem('refreshToken', result.refreshToken)
     setUser(result.user)

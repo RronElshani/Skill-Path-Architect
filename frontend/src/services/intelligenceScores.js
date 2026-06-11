@@ -76,13 +76,15 @@ export const progressMilestones = [
   { label: 'Personalized summary reviewed', complete: false }
 ]
 
-export function loadScores(userAssessment, showSample = false, hasProfile = false) {
+import { hasCompletedAssessment, hasCareerMatches } from './assessmentState.js'
+
+export function loadScores(userAssessment, showSample = false, isLoggedIn = false) {
   try {
-    const isAssessmentFinished = showSample || !!(userAssessment && userAssessment.scores) || !!localStorage.getItem('career_predictions')
-    const isCareersGenerated = showSample || !!(userAssessment && userAssessment.predictions && userAssessment.predictions.length > 0) || !!localStorage.getItem('career_predictions')
+    const isAssessmentFinished = hasCompletedAssessment(userAssessment, { isLoggedIn, showSample })
+    const isCareersGenerated = hasCareerMatches(userAssessment, { isLoggedIn, showSample })
     const isSummaryReviewed = isCareersGenerated && (localStorage.getItem('summary_reviewed') === 'true')
 
-    progressMilestones[0].complete = hasProfile
+    progressMilestones[0].complete = isLoggedIn
     progressMilestones[1].complete = isAssessmentFinished
     progressMilestones[2].complete = isCareersGenerated
     progressMilestones[3].complete = isSummaryReviewed
@@ -94,7 +96,11 @@ export function loadScores(userAssessment, showSample = false, hasProfile = fals
     }
 
     let scores = null
-    if (userAssessment && userAssessment.scores) {
+    if (isLoggedIn) {
+      if (userAssessment?.completedAt && userAssessment.scores) {
+        scores = userAssessment.scores
+      }
+    } else if (userAssessment?.scores) {
       scores = userAssessment.scores
     } else {
       const raw = localStorage.getItem('career_predictions')

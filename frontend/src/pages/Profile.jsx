@@ -49,7 +49,7 @@ export default function Profile() {
   }, [savedCareersKey])
 
   const topStrengths = useMemo(() => {
-    if (!user?.assessment?.scores) return []
+    if (!user?.assessment?.completedAt || !user?.assessment?.scores) return []
     return Object.entries(user.assessment.scores)
       .map(([id, score]) => ({ id, score: Number(score) }))
       .sort((a, b) => b.score - a.score)
@@ -58,7 +58,7 @@ export default function Profile() {
 
   if (!user) return null
 
-  loadPredictions(user?.assessment)
+  loadPredictions(user?.assessment, false, true)
 
   const joinedDate = user.createdAt
     ? new Date(user.createdAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })

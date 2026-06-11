@@ -32,7 +32,7 @@ export default function Results() {
   }, [shouldAnimate, navigate, location.pathname, location.search])
 
   // Dynamically load predictions and scores
-  loadPredictions(user?.assessment, showSample)
+  loadPredictions(user?.assessment, showSample, !!user)
   loadScores(user?.assessment, showSample, !!user)
 
   // Track if we have summary reviewed
