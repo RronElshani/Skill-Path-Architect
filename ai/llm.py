@@ -128,7 +128,10 @@ def generate_summary(predictions, scores):
         data=body,
         headers={
             'Content-Type': 'application/json',
-            'Authorization': f'Bearer {api_key}'
+            'Authorization': f'Bearer {api_key}',
+            # Some providers (e.g. Groq behind Cloudflare) reject the default
+            # Python-urllib User-Agent with a 403, so send a standard one.
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
         },
         method='POST'
     )

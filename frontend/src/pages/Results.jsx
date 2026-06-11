@@ -5,6 +5,7 @@ import IntelligenceRadarChart from '../components/ai/IntelligenceRadarChart.jsx'
 import AiSummaryPanel from '../components/ai/AiSummaryPanel.jsx'
 import AiCareerCard from '../components/ai/AiCareerCard.jsx'
 import AiBadge from '../components/ai/AiBadge.jsx'
+import CareerCounselorChat from '../components/ai/CareerCounselorChat.jsx'
 import ReviewCard from '../components/ReviewCard.jsx'
 import { loadPredictions, assessmentReport, careerRecommendations, radarSnapshot, personalizedSummary, nextSteps } from '../services/careerRecommendations.js'
 import { loadScores } from '../services/intelligenceScores.js'
@@ -243,6 +244,8 @@ export default function Results() {
           ))}
         </div>
       </section>
+
+      {!showSample && <CareerCounselorChat topMatch={topMatch} />}
 
       <ReviewCard predictions={careerRecommendations} />
     </div>
