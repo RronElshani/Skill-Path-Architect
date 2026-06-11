@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { isCareerSaved, toggleSaveCareer } from '../../services/bookmarks.js'
+import { fetchCareerByCode, formatSalary } from '../../services/careers.js'
 
 function confidenceStyle(c) {
   if (c >= 85) return { chip: 'from-emerald-500 to-teal-500', ring: 'ring-emerald-200' }
@@ -12,8 +13,20 @@ function confidenceStyle(c) {
 export default function AiCareerCard({ rank, career }) {
   const { user } = useAuth()
   const [saved, setSaved] = useState(isCareerSaved(user?.id, career.id))
+  const [salaryBand, setSalaryBand] = useState(null)
   const style = confidenceStyle(career.confidence)
   const gradId = `grad-${career.id}`
+
+  // Dynamically pull the salary band from the career registry for a clean chip.
+  useEffect(() => {
+    let active = true
+    fetchCareerByCode(career.id)
+      .then((data) => active && setSalaryBand(data?.salaryBand || null))
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [career.id])
 
   const handleBookmark = (e) => {
     e.preventDefault()
@@ -60,6 +73,12 @@ export default function AiCareerCard({ rank, career }) {
             </div>
           </div>
           <p className="mt-2 text-sm text-slate-600 line-clamp-2">{career.summary}</p>
+          {salaryBand?.median ? (
+            <span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
+              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
+              {formatSalary(salaryBand.median, salaryBand.currency)} median
+            </span>
+          ) : null}
           <p className="mt-3 text-sm font-medium text-indigo-600 opacity-0 transition group-hover:opacity-100">View AI breakdown →</p>
         </div>
       </div>
