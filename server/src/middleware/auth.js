@@ -8,15 +8,21 @@ import userRepository from '../repositories/userRepository.js'
 export const authenticate = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization
+    let token = null
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1]
+    } else if (req.query && req.query.token) {
+      // Fallback for SSE (EventSource) connections that cannot send custom headers
+      token = req.query.token
+    }
+
+    if (!token) {
       return res.status(401).json({
         success: false,
         message: 'Access denied. No token provided.',
       })
     }
-
-    const token = authHeader.split(' ')[1]
     const decoded = jwt.verify(token, config.jwt.accessSecret)
 
     const user = await userRepository.findById(decoded.id)

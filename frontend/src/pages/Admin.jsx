@@ -4,6 +4,7 @@ import AdminOverview from '../components/admin/AdminOverview.jsx'
 import AdminUsersPanel from '../components/admin/AdminUsersPanel.jsx'
 import AdminReviewsPanel from '../components/admin/AdminReviewsPanel.jsx'
 import AdminInsightsPanel from '../components/admin/AdminInsightsPanel.jsx'
+import AdminModelOverview from './AdminModelOverview.jsx'
 import {
   deleteReview,
   deleteUser,
@@ -181,6 +182,10 @@ export default function Admin() {
             topCareers={buildTopCareers(users, 10)}
             users={users}
           />
+        )}
+
+        {tab === 'models' && (
+          <AdminModelOverview />
         )}
       </div>
     </>
