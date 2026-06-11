@@ -14,6 +14,7 @@ load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env'))
 
 import predict
 import llm
+import chat
 
 app = Flask(__name__)
 # Enable CORS for frontend integration
@@ -191,6 +192,36 @@ def generate_summary():
         import traceback
         traceback.print_exc()
         return jsonify({'error': f'Summary generation failed: {str(e)}'}), 500
+
+
+@app.route('/api/chat', methods=['POST'])
+def chat_reply():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+
+        messages = data.get('messages')
+        predictions = data.get('predictions', [])
+        scores = data.get('scores', {})
+
+        if not isinstance(messages, list) or len(messages) == 0:
+            return jsonify({'error': 'messages array is required'}), 400
+        if not isinstance(predictions, list):
+            return jsonify({'error': 'predictions must be an array'}), 400
+        if not isinstance(scores, dict):
+            return jsonify({'error': 'scores must be an object'}), 400
+
+        reply = chat.generate_reply(messages, predictions, scores)
+        source = 'llm' if os.environ.get('LLM_API_KEY') else 'local'
+        return jsonify({'success': True, 'reply': reply, 'source': source})
+
+    except RuntimeError as e:
+        return jsonify({'error': str(e)}), 502
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Chat reply generation failed: {str(e)}'}), 500
 
 
 if __name__ == '__main__':
