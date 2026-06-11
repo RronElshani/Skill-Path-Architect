@@ -1,8 +1,23 @@
+import bcrypt from 'bcryptjs'
 import userRepository from '../repositories/userRepository.js'
 import modelExperimentRepository from '../repositories/modelExperimentRepository.js'
 import { ASSESSMENT_DIMENSIONS } from '../constants/assessmentDimensions.js'
 
 const ADMIN_UPDATABLE_FIELDS = ['name', 'role']
+const SELF_UPDATABLE_FIELDS = ['name', 'email', 'twoFactorEnabled']
+
+/** Shape a user document into the safe payload returned to the client. */
+function toPublicUser(user) {
+  return {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    twoFactorEnabled: user.twoFactorEnabled,
+    assessment: user.assessment,
+    createdAt: user.createdAt,
+  }
+}
 
 /**
  * Service layer for user-related business logic.
@@ -43,6 +58,62 @@ const userService = {
       throw error
     }
     return user
+  },
+
+  /** Self-service profile update (name, email, 2FA preference). */
+  async updateMe(userId, updateData) {
+    const allowed = {}
+    for (const field of SELF_UPDATABLE_FIELDS) {
+      if (updateData[field] !== undefined) {
+        allowed[field] = updateData[field]
+      }
+    }
+
+    if (Object.keys(allowed).length === 0) {
+      const error = new Error('No valid fields to update. Allowed: name, email, twoFactorEnabled')
+      error.statusCode = 400
+      throw error
+    }
+
+    // Guard against taking another account's email.
+    if (allowed.email) {
+      allowed.email = allowed.email.toLowerCase().trim()
+      const existing = await userRepository.findByEmail(allowed.email)
+      if (existing && existing._id.toString() !== userId.toString()) {
+        const error = new Error('That email is already in use')
+        error.statusCode = 409
+        throw error
+      }
+    }
+
+    const user = await userRepository.updateById(userId, allowed)
+    if (!user) {
+      const error = new Error('User not found')
+      error.statusCode = 404
+      throw error
+    }
+    return toPublicUser(user)
+  },
+
+  /** Change own password after verifying the current one. */
+  async changePassword(userId, { currentPassword, newPassword }) {
+    const user = await userRepository.findById(userId, true)
+    if (!user) {
+      const error = new Error('User not found')
+      error.statusCode = 404
+      throw error
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password)
+    if (!isMatch) {
+      const error = new Error('Current password is incorrect')
+      error.statusCode = 401
+      throw error
+    }
+
+    const salt = await bcrypt.genSalt(12)
+    const hashedPassword = await bcrypt.hash(newPassword, salt)
+    await userRepository.updateById(userId, { password: hashedPassword })
   },
 
   async deleteUser(id) {

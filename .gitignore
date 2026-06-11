@@ -27,6 +27,9 @@ server/data/
 *.swp
 *.swo
 
+
+# Baseline ML artifacts (regenerable via `npm run train:baseline`)
+ai/models/*.joblib
 # Model evaluation directories
 model_evaluations/
 ai/models/archive/
