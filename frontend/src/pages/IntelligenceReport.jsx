@@ -1,14 +1,52 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import IntelligenceRadarChart from '../components/ai/IntelligenceRadarChart.jsx'
 import { AiInsightRow } from '../components/ai/AiCareerCard.jsx'
 import AiBadge from '../components/ai/AiBadge.jsx'
 import { loadPredictions, assessmentReport, radarSnapshot, intelligenceInsights } from '../services/careerRecommendations.js'
 import { loadScores, intelligenceDimensions } from '../services/intelligenceScores.js'
+import { useAuth } from '../context/AuthContext.jsx'
 
 export default function IntelligenceReport() {
-  loadPredictions()
-  loadScores()
+  const { user, loading } = useAuth()
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    if (loading) return
+
+    loadPredictions(user?.assessment)
+    loadScores(user?.assessment, false, !!user)
+    setReady(true)
+  }, [user, loading])
+
+  if (loading || !ready) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <p className="text-sm font-medium text-slate-500">Loading neural profile...</p>
+      </div>
+    )
+  }
+
+  const hasData = radarSnapshot.length > 0
   const sorted = [...intelligenceInsights].sort((a, b) => b.score - a.score)
+
+  if (!hasData) {
+    return (
+      <div className="mx-auto max-w-md py-16 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 mx-auto text-3xl">
+          🧠
+        </div>
+        <h2 className="mt-5 text-2xl font-semibold text-slate-900">No assessment data yet</h2>
+        <p className="mt-3 text-sm text-slate-600">
+          Complete the Multiple Intelligences assessment to generate your cognitive neural map and dimension breakdown.
+        </p>
+        <div className="mt-8 flex justify-center gap-3">
+          <Link to="/assessment" className="btn-primary">Begin assessment</Link>
+          <Link to="/results" className="btn-secondary">Back to results</Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="ai-mesh -mx-4 space-y-8 rounded-2xl px-4 py-2 sm:-mx-6 sm:px-6">
@@ -27,10 +65,10 @@ export default function IntelligenceReport() {
       </header>
 
       <section className="grid gap-6 lg:grid-cols-12">
-        <div className="ai-panel p-6 lg:col-span-5">
+        <div className="ai-panel !overflow-visible p-6 lg:col-span-5">
           <h2 className="font-semibold text-slate-900">Radar visualization</h2>
           <div className="mt-4 w-full">
-            <IntelligenceRadarChart data={radarSnapshot} />
+            <IntelligenceRadarChart data={radarSnapshot} className="mt-2" />
           </div>
         </div>
         <div className="lg:col-span-7">

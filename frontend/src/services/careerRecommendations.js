@@ -431,13 +431,13 @@ export function loadPredictions(userAssessment, showSample = false) {
         timestamp: defaultReport.completedAt,
         studentName: defaultReport.studentName
       }
-    } else if (userAssessment && userAssessment.scores && userAssessment.predictions && userAssessment.predictions.length > 0) {
+    } else if (userAssessment?.scores) {
       data = {
         scores: userAssessment.scores,
-        predictions: userAssessment.predictions,
+        predictions: userAssessment.predictions || [],
         summary: userAssessment.summary,
         timestamp: userAssessment.completedAt || new Date().toISOString(),
-        studentName: userAssessment.name || 'Student Profile'
+        studentName: userAssessment.name || userAssessment.studentName || 'Student Profile',
       }
     } else {
       const raw = localStorage.getItem('career_predictions')
