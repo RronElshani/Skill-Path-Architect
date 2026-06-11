@@ -51,6 +51,10 @@ const careerRepository = {
       { upsert: true, new: true, setDefaultsOnInsert: true }
     )
   },
+
+  async countCareers() {
+    return await CareerPath.countDocuments()
+  },
 }
 
 export default careerRepository
