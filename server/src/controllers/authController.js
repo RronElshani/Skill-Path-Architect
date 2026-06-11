@@ -66,6 +66,32 @@ const authController = {
       next(error)
     }
   },
+
+  async forgotPassword(req, res, next) {
+    try {
+      const { email } = req.body
+      await authService.forgotPassword(email)
+      res.status(200).json({
+        success: true,
+        message: 'Verification code sent to your email',
+      })
+    } catch (error) {
+      next(error)
+    }
+  },
+
+  async resetPassword(req, res, next) {
+    try {
+      const { email, code, newPassword } = req.body
+      await authService.resetPassword(email, code, newPassword)
+      res.status(200).json({
+        success: true,
+        message: 'Password reset successful',
+      })
+    } catch (error) {
+      next(error)
+    }
+  },
 }
 
 export default authController

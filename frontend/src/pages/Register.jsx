@@ -31,7 +31,7 @@ export default function Register() {
     setLoading(true)
     try {
       await register(name, email, password)
-      navigate('/dashboard')
+      navigate('/login', { state: { successMessage: 'Registration successful! Please sign in with your credentials.' } })
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.')
     } finally {
