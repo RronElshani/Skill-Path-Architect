@@ -3,6 +3,7 @@ const tabs = [
   { id: 'students', label: 'Students', icon: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M16 3.128a4 4 0 0 1 0 7.744M22 21v-2a4 4 0 0 0-3-3.87' },
   { id: 'feedback', label: 'Feedback', icon: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z' },
   { id: 'insights', label: 'Career insights', icon: 'M12 3v18M3 12h18M6 6l12 12M18 6 6 18' },
+  { id: 'models', label: 'Model management', icon: 'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z' },
 ]
 
 export default function AdminTabs({ active, onChange }) {

@@ -1,4 +1,5 @@
 import userRepository from '../repositories/userRepository.js'
+import modelExperimentRepository from '../repositories/modelExperimentRepository.js'
 import { ASSESSMENT_DIMENSIONS } from '../constants/assessmentDimensions.js'
 
 const ADMIN_UPDATABLE_FIELDS = ['name', 'role']
@@ -77,6 +78,12 @@ const userService = {
 
     let predictions = []
     try {
+      const activeModel = await modelExperimentRepository.findActive()
+      if (activeModel) {
+        preprocessedPayload.model_path = activeModel.filePath
+        preprocessedPayload.encoder_path = activeModel.encoderPath
+      }
+
       const response = await fetch('http://localhost:5001/api/predict', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

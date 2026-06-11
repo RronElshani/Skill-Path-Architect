@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs'
 import config from '../config/index.js'
 import userRepository from '../repositories/userRepository.js'
+import modelExperimentService from './modelExperimentService.js'
 
 async function ensureDefaultAdmin() {
   const email = config.defaultAdminEmail?.trim().toLowerCase()
@@ -46,4 +47,5 @@ async function promoteConfiguredAdmin() {
 export async function bootstrapAdmin() {
   await ensureDefaultAdmin()
   await promoteConfiguredAdmin()
+  await modelExperimentService.seedInitialExperimentIfEmpty()
 }

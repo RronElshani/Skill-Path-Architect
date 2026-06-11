@@ -12,6 +12,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 # Load environment variables from ai/.env (used by the LLM summary endpoint)
 load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env'))
 
+import zipfile
 import predict
 import llm
 import chat
@@ -21,11 +22,33 @@ app = Flask(__name__)
 CORS(app)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def check_and_unzip_models():
+    """Unzip Random Forest or other zipped models on startup if they don't exist."""
+    rf_dir = os.path.join(BASE_DIR, 'models', 'random_forest')
+    rf_zip = os.path.join(rf_dir, 'career_prediction_model.zip')
+    rf_h5 = os.path.join(rf_dir, 'career_prediction_model.h5')
+    
+    if os.path.exists(rf_zip) and not os.path.exists(rf_h5):
+        print(f"Unzipping Random Forest model from {rf_zip} to {rf_h5}...")
+        try:
+            with zipfile.ZipFile(rf_zip, 'r') as zip_ref:
+                zip_ref.extractall(rf_dir)
+            print("Random Forest model unzipped successfully.")
+        except Exception as e:
+            print(f"Failed to unzip Random Forest model: {e}", file=sys.stderr)
+
+check_and_unzip_models()
+
 MODEL_PATH = os.path.join(BASE_DIR, 'models', 'career_prediction_model.h5')
 ENCODER_PATH = os.path.join(BASE_DIR, 'models', 'career_label_encoder.h5')
 
 model, encoder, scaler = None, None, None
 _load_error = None
+
+# In-memory caches for dynamic model routing
+model_cache = {}
+encoder_cache = {}
 
 
 def ensure_models_loaded():
@@ -59,15 +82,46 @@ def ensure_models_loaded():
         return False
 
 
+def get_dynamic_model_and_encoder(model_path, encoder_path):
+    """Dynamically load and cache model/encoder files relative to project root."""
+    global scaler
+    if scaler is None:
+        scaler = predict.build_scaler()
+
+    project_root = os.path.abspath(os.path.join(BASE_DIR, '..'))
+
+    # Normalize paths
+    rel_model = model_path.replace('\\', '/')
+    rel_encoder = encoder_path.replace('\\', '/')
+
+    abs_model_path = os.path.abspath(os.path.join(project_root, rel_model)) if not os.path.isabs(rel_model) else rel_model
+    abs_encoder_path = os.path.abspath(os.path.join(project_root, rel_encoder)) if not os.path.isabs(rel_encoder) else rel_encoder
+
+    if abs_model_path not in model_cache:
+        print(f"Dynamically loading and caching model from: {abs_model_path}")
+        model_cache[abs_model_path] = predict.load_model(abs_model_path)
+
+    if abs_encoder_path not in encoder_cache:
+        print(f"Dynamically loading and caching encoder from: {abs_encoder_path}")
+        encoder_cache[abs_encoder_path] = predict.load_encoder(abs_encoder_path)
+
+    return model_cache[abs_model_path], encoder_cache[abs_encoder_path]
+
+
 @app.route('/api/predict', methods=['POST'])
 def predict_career():
-    if not ensure_models_loaded():
-        return jsonify({'error': f'Prediction service is unavailable because model files failed to load: {_load_error}'}), 500
-
     try:
         data = request.get_json()
         if not data:
             return jsonify({'error': 'No data provided'}), 400
+
+        model_path = data.get('model_path') or 'ai/models/career_prediction_model.h5'
+        encoder_path = data.get('encoder_path') or 'ai/models/career_label_encoder.h5'
+
+        try:
+            req_model, req_encoder = get_dynamic_model_and_encoder(model_path, encoder_path)
+        except Exception as load_err:
+            return jsonify({'error': f'Failed to load dynamic model files: {str(load_err)}'}), 500
 
         # Mapping UI and key aliases to feature indices in order:
         # 1. language_skills
@@ -126,7 +180,7 @@ def predict_career():
 
         # Run prediction to get the top 5 recommendations
         top_k = int(data.get('top_k', 5))
-        labels, scores = predict.predict(model, encoder, normalized, top_k=top_k)
+        labels, scores = predict.predict(req_model, req_encoder, normalized, top_k=top_k)
 
         # Calibrate confidence scores for a better visual representation in UX.
         # XGBoost probabilities are often extremely skewed (e.g. 99% for top class and <1% for others).
@@ -222,6 +276,20 @@ def chat_reply():
         import traceback
         traceback.print_exc()
         return jsonify({'error': f'Chat reply generation failed: {str(e)}'}), 500
+
+
+@app.route('/api/reload_model', methods=['POST'])
+def reload_model():
+    global model, encoder, scaler, _load_error
+    # Force reload of files from disk
+    model, encoder, scaler = None, None, None
+    model_cache.clear()
+    encoder_cache.clear()
+    success = ensure_models_loaded()
+    if success:
+        return jsonify({'success': True, 'message': 'Model reloaded and caches cleared successfully'})
+    else:
+        return jsonify({'error': f'Failed to reload model: {_load_error}'}), 500
 
 
 if __name__ == '__main__':
