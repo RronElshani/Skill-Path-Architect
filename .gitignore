@@ -26,3 +26,10 @@ server/data/
 .idea/
 *.swp
 *.swo
+
+# Python bytecode cache (generated)
+__pycache__/
+*.pyc
+
+# Baseline ML artifacts (regenerable via `npm run train:baseline`)
+ai/models/*.joblib
