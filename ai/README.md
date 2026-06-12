@@ -145,8 +145,20 @@ Run all cells sequentially. The notebook is self-contained — it loads the CSV,
 ```
 ai/
 ├── dataset/
-│   ├── dataset_skill_predictor.csv   # Raw dataset (3,600 × 21 columns)
-│   └── README.md                     # This file's dataset supplement
-├── dataset_exploration.ipynb         # Full ML pipeline notebook
-└── README.md                         # ← You are here
+│   ├── dataset_skill_predictor.csv            # Raw dataset (3,600 × 21 columns)
+│   └── README.md                              # Dataset description
+├── jupyter/                                   # Jupyter Notebooks for exploration and training
+│   ├── cluster_features.ipynb                 # K-Means clustering feature engineering
+│   ├── train_baseline.ipynb                   # Multinomial Logistic Regression baseline
+│   ├── initial_model_training.ipynb           # Primary XGBoost model training
+│   ├── alternative_classifiers_training.ipynb  # Random Forest & SVM models
+│   ├── neural_network_training.ipynb          # MLP Neural Network training
+│   └── python_demo_of_model_application.ipynb  # Demo of prediction using models
+├── app.py                                     # Flask API server
+├── chat.py                                    # LLM chat session handler
+├── llm.py                                     # Gemini LLM integration service
+├── predict.py                                 # Career prediction logic
+├── preprocess.py                              # Data cleaning and scaling
+├── train.py                                   # Primary model training script
+└── README.md                                  # ← You are here
 ```

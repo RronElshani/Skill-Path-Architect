@@ -55,11 +55,11 @@ export default function HeroSection() {
 
             <div className="mt-6 space-y-4">
               {[
-                { name: 'Logical-Mathematical', score: 92 },
-                { name: 'Spatial', score: 86 },
-                { name: 'Interpersonal', score: 74 },
-                { name: 'Linguistic', score: 68 },
-                { name: 'Naturalistic', score: 55 }
+                { name: 'Math and Logic', score: 92 },
+                { name: 'Spatial Awareness', score: 86 },
+                { name: 'Collaboration Skills', score: 74 },
+                { name: 'Language Skills', score: 68 },
+                { name: 'Sustainability Focus', score: 55 }
               ].map((row) => (
                 <div key={row.name}>
                   <div className="flex items-center justify-between text-sm">

@@ -6,7 +6,7 @@
   "scripts": {
     "ensure:models": "node -e \"const fs=require('fs');const cp=require('child_process');const m='ai/models/career_prediction_model.h5';const e='ai/models/career_label_encoder.h5';if(!fs.existsSync(m)||!fs.existsSync(e)){console.log('Training AI models (first run)...');cp.execSync('python ai/train.py -i ai/dataset/dataset_skill_predictor.csv -m ai/models/career_prediction_model.h5',{stdio:'inherit'});}\"",
     "train:ai": "python ai/train.py -i ai/dataset/dataset_skill_predictor.csv -m ai/models/career_prediction_model.h5",
-    "train:baseline": "python ai/train_baseline.py -i ai/dataset/dataset_skill_predictor.csv -m ai/models/career_baseline_logreg.joblib",
+    "train:baseline": "jupyter nbconvert --to notebook --execute --inplace ai/jupyter/train_baseline.ipynb",
     "dev:ai": "npm run ensure:models && python ai/app.py",
     "dev:server": "npm run dev --prefix server",
     "dev:frontend": "npm run dev --prefix frontend",

@@ -41,7 +41,7 @@ export default function Navbar() {
 
   // If user is logged in, hide landing pages and only show Dashboard, Assessment, Results, Profile.
   let filteredNavItems = []
-  if (!user) {
+  if (!user || user.role === 'admin') {
     filteredNavItems = mainNavItems.filter(
       (item) => item.to === '/' || item.to === '/methodology' || item.to === '/about'
     )
@@ -72,17 +72,26 @@ export default function Navbar() {
         <div className="ml-auto flex shrink-0 items-center gap-3">
           {user ? (
             <>
-              <Link
-                to="/profile"
-                className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-slate-100"
-              >
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-xs font-semibold text-white">
-                  {userInitials}
-                </span>
-                <span className="hidden text-sm font-medium text-slate-700 sm:block">
-                  {displayName.split(' ')[0]}
-                </span>
-              </Link>
+              {user.role === 'admin' ? (
+                <Link
+                  to="/admin"
+                  className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-700 transition hover:bg-amber-500/20"
+                >
+                  Admin Console
+                </Link>
+              ) : (
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-slate-100"
+                >
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-xs font-semibold text-white">
+                    {userInitials}
+                  </span>
+                  <span className="hidden text-sm font-medium text-slate-700 sm:block">
+                    {displayName.split(' ')[0]}
+                  </span>
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={logout}

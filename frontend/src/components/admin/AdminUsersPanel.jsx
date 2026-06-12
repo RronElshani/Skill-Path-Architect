@@ -27,7 +27,7 @@ function UserDetail({ user, onClose }) {
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-amber-400">Student profile</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-amber-400">User profile</p>
             <h2 className="mt-1 text-xl font-semibold text-white">{user.name}</h2>
             <p className="text-sm text-slate-400">{user.email}</p>
           </div>
@@ -99,7 +99,7 @@ function UserDetail({ user, onClose }) {
             )}
           </>
         ) : (
-          <p className="mt-8 text-sm text-slate-500">This student has not completed the Gardner assessment yet.</p>
+          <p className="mt-8 text-sm text-slate-500">This user has not completed the Gardner assessment yet.</p>
         )}
       </div>
     </div>
@@ -168,7 +168,7 @@ export default function AdminUsersPanel({
               type="search"
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
-              placeholder="Search students..."
+              placeholder="Search users..."
               className="input-field border-slate-700 bg-slate-950 text-white placeholder:text-slate-500 sm:w-64"
             />
             <button
@@ -184,12 +184,12 @@ export default function AdminUsersPanel({
 
         <div className="mt-6 overflow-x-auto">
           {loading ? (
-            <p className="py-10 text-center text-sm text-slate-500">Loading students...</p>
+            <p className="py-10 text-center text-sm text-slate-500">Loading users...</p>
           ) : (
             <table className="min-w-full divide-y divide-slate-800">
               <thead>
                 <tr className="text-left">
-                  <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Student</th>
+                  <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">User</th>
                   <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Top match</th>
                   <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Status</th>
                   <th className="px-3 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Joined</th>
