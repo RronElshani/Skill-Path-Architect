@@ -15,6 +15,7 @@ import AdminEntry from './components/AdminEntry.jsx'
 import AdminLogin from './pages/AdminLogin.jsx'
 import Methodology from './pages/Methodology.jsx'
 import AboutUs from './pages/AboutUs.jsx'
+import NotFound from './pages/NotFound.jsx'
 
 export default function App() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminEntry />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
     </>

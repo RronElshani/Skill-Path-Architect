@@ -75,7 +75,7 @@ AI-Guidance-Counselor/
 │   ├── dataset/
 │   │   ├── dataset_skill_predictor.csv   # 3,600 samples, 72 professions
 │   │   └── README.md
-│   ├── dataset_exploration.ipynb  # Full ML pipeline (XGBoost)
+│   ├── jupyter/                   # Jupyter Notebooks for training & baseline
 │   └── README.md                  # AI module documentation
 │
 ├── frontend/                      # Frontend (React + Vite + Tailwind)

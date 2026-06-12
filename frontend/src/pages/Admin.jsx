@@ -150,7 +150,7 @@ export default function Admin() {
           />
         )}
 
-        {tab === 'students' && (
+        {tab === 'users' && (
           <AdminUsersPanel
             users={users}
             loading={loading}

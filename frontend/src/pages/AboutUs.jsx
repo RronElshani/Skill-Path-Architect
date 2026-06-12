@@ -13,7 +13,7 @@ export default function AboutUs() {
       name: 'Redon Brovina',
       role: 'ML Developer / Product Manager',
       initials: 'RB',
-      desc: 'Trained the XGBoost classification models, processed dataset mapping, and managed project progress.'
+      desc: 'Trained the classification models, processed dataset mapping, and managed project progress.'
     },
     {
       name: 'Rron Elshani',
@@ -54,7 +54,7 @@ export default function AboutUs() {
           Our goal was to design a platform that combines established cognitive research (Howard Gardner's Multiple Intelligences) with modern machine learning classifiers (XGBoost) and Large Language Models.
         </p>
         <p className="text-sm text-slate-600 leading-relaxed">
-          The result is **Skill-Path-Architect** — an intuitive counselor that maps a student\'s natural strengths to realistic career matches, complete with job market outlooks, academic roadmaps, and portfolio project ideas.
+          The result is AI Guidance Counselor — an intuitive counselor that maps a student\'s natural strengths to realistic career matches, complete with job market outlooks, academic roadmaps, and portfolio project ideas.
         </p>
       </section>
 

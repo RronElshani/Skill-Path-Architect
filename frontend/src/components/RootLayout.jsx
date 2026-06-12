@@ -48,12 +48,20 @@ export default function RootLayout() {
     return <Navigate to="/login" replace state={{ from }} />
   }
 
+  // Prevent admin from entering user pages
+  if (isApp && user?.role === 'admin') {
+    return <Navigate to="/admin" replace />
+  }
+
   if (pathname === '/admin/login' && user?.role === 'admin') {
     return <Navigate to="/admin" replace />
   }
 
   // Redirect authenticated users away from student login/register/forgot-password
   if ((pathname === '/login' || pathname === '/register' || pathname === '/forgot-password') && user) {
+    if (user.role === 'admin') {
+      return <Navigate to="/admin" replace />
+    }
     return <Navigate to={getSafeRedirectPath(location.state?.from)} replace />
   }
 

@@ -21,7 +21,7 @@ const config = {
     refreshExpiry: process.env.JWT_REFRESH_EXPIRY || '7d',
   },
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
-  defaultAdminEmail: process.env.DEFAULT_ADMIN_EMAIL || 'admin@skillpatharchitect.ai',
+  defaultAdminEmail: process.env.DEFAULT_ADMIN_EMAIL || 'admin@guidance-counselor.ai',
   defaultAdminPassword: process.env.DEFAULT_ADMIN_PASSWORD || 'Admin123!',
   defaultAdminName: process.env.DEFAULT_ADMIN_NAME || 'System Admin',
   adminEmail: process.env.ADMIN_EMAIL || '',

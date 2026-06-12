@@ -114,7 +114,7 @@ const modelExperimentService = {
         f1Score: 0.8286,
         filePath: 'ai/models/xgboost/career_prediction_model.h5',
         encoderPath: 'ai/models/xgboost/career_label_encoder.h5',
-        isActive: true,
+        isActive: false,
         metricsPerClass: {}
       },
       {
@@ -145,7 +145,7 @@ const modelExperimentService = {
         f1Score: 0.8631,
         filePath: 'ai/models/svm/career_prediction_model.h5',
         encoderPath: 'ai/models/svm/career_label_encoder.h5',
-        isActive: false,
+        isActive: true,
         metricsPerClass: {}
       },
       {
@@ -168,7 +168,13 @@ const modelExperimentService = {
     ]
 
     console.log('Synchronizing initial model experiments with updated scores in database...')
-    const active = await modelExperimentRepository.findActive()
+    let active = await modelExperimentRepository.findActive()
+    if (active && active.runId === 'run_initial_xgboost') {
+      console.log('Migrating default active model from XGBoost to SVM...')
+      // Deactivate all models
+      await modelExperimentRepository.deactivateAll()
+      active = null
+    }
 
     for (const seed of initialSeeds) {
       let isActiveFlag = seed.isActive
@@ -189,6 +195,35 @@ const modelExperimentService = {
         metricsPerClass: seed.metricsPerClass
       })
     }
+
+    // Synchronize the physical active model files on disk
+    const newActive = await modelExperimentRepository.findActive()
+    if (newActive) {
+      const aiDir = path.resolve(PROJECT_ROOT, 'ai')
+      let sourceModel = newActive.filePath
+      if (sourceModel.startsWith('ai/')) {
+        sourceModel = sourceModel.substring(3)
+      }
+      const sourceModelPath = path.resolve(aiDir, sourceModel)
+
+      let sourceEncoder = newActive.encoderPath || ''
+      if (sourceEncoder.startsWith('ai/')) {
+        sourceEncoder = sourceEncoder.substring(3)
+      }
+      const sourceEncoderPath = sourceEncoder ? path.resolve(aiDir, sourceEncoder) : ''
+
+      const targetModelPath = path.resolve(aiDir, 'models/career_prediction_model.h5')
+      const targetEncoderPath = path.resolve(aiDir, 'models/career_label_encoder.h5')
+
+      if (fs.existsSync(sourceModelPath)) {
+        fs.copyFileSync(sourceModelPath, targetModelPath)
+        if (sourceEncoderPath && fs.existsSync(sourceEncoderPath)) {
+          fs.copyFileSync(sourceEncoderPath, targetEncoderPath)
+        }
+        console.log(`Synchronized physical active model files on disk to: ${newActive.algorithm}`)
+      }
+    }
+
     console.log('Initial model experiments synchronized successfully.')
   }
 }
