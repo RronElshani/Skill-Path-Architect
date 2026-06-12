@@ -4,6 +4,7 @@ import Input from '../components/Input.jsx'
 import Button from '../components/Button.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { loadRememberedEmail, saveRememberedEmail } from '../utils/rememberEmail.js'
+import { getSafeRedirectPath } from '../utils/authRedirect.js'
 
 export default function Login() {
   const { login } = useAuth()
@@ -38,7 +39,7 @@ export default function Login() {
     try {
       await login(email, password)
       saveRememberedEmail(email, rememberMe, 'login')
-      navigate('/dashboard')
+      navigate(getSafeRedirectPath(location.state?.from), { replace: true })
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.')
     } finally {
@@ -159,7 +160,11 @@ export default function Login() {
 
           <p className="mt-6 text-center text-sm text-slate-600">
             New to AI Guidance Counselor?{' '}
-            <Link to="/register" className="font-medium text-brand-700 hover:text-brand-800">
+            <Link
+              to="/register"
+              state={location.state?.from ? { from: location.state.from } : undefined}
+              className="font-medium text-brand-700 hover:text-brand-800"
+            >
               Create an account
             </Link>
           </p>

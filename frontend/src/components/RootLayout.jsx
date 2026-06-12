@@ -2,6 +2,7 @@ import { Outlet, useLocation, Navigate } from 'react-router-dom'
 import Navbar from './Navbar.jsx'
 import Footer from './Footer.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
+import { getSafeRedirectPath } from '../utils/authRedirect.js'
 
 const authRoutes = new Set(['/login', '/register', '/admin/login', '/forgot-password'])
 
@@ -21,7 +22,8 @@ function isAdminRoute(pathname) {
 }
 
 export default function RootLayout() {
-  const { pathname } = useLocation()
+  const location = useLocation()
+  const { pathname } = location
   const { user, loading } = useAuth()
   const hideChrome = authRoutes.has(pathname) || pathname === '/admin'
   const isApp = isAppRoute(pathname)
@@ -42,7 +44,8 @@ export default function RootLayout() {
 
   // Redirect unauthenticated users trying to access protected routes
   if (isApp && !user) {
-    return <Navigate to="/login" replace />
+    const from = `${location.pathname}${location.search}${location.hash}`
+    return <Navigate to="/login" replace state={{ from }} />
   }
 
   if (pathname === '/admin/login' && user?.role === 'admin') {
@@ -51,7 +54,7 @@ export default function RootLayout() {
 
   // Redirect authenticated users away from student login/register/forgot-password
   if ((pathname === '/login' || pathname === '/register' || pathname === '/forgot-password') && user) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to={getSafeRedirectPath(location.state?.from)} replace />
   }
 
   if (hideChrome || isAdminRoute(pathname)) {

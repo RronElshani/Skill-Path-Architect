@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import ScrollToTop from './components/ScrollToTop.jsx'
 import RootLayout from './components/RootLayout.jsx'
 import Home from './pages/Home.jsx'
 import Login from './pages/Login.jsx'
@@ -17,7 +18,9 @@ import AboutUs from './pages/AboutUs.jsx'
 
 export default function App() {
   return (
-    <Routes>
+    <>
+      <ScrollToTop />
+      <Routes>
       <Route element={<RootLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/methodology" element={<Methodology />} />
@@ -35,5 +38,6 @@ export default function App() {
         <Route path="/admin" element={<AdminEntry />} />
       </Route>
     </Routes>
+    </>
   )
 }
