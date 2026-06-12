@@ -1,23 +1,34 @@
 import nodemailer from 'nodemailer'
 
-const email = process.env.EMAIL
-const emailPass = process.env.EMAIL_PASS
+const email = process.env.EMAIL?.trim()
+const emailPass = process.env.EMAIL_PASS?.trim()
+const isDev = process.env.NODE_ENV !== 'production'
 
-if (!email || !emailPass) {
-  throw new Error('EMAIL and EMAIL_PASS environment variables must be configured in .env')
+function getTransporter() {
+  if (!email || !emailPass) {
+    if (isDev) return null
+    throw new Error('EMAIL and EMAIL_PASS environment variables must be configured in .env')
+  }
+
+  return nodemailer.createTransport({
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.EMAIL_PORT || '587', 10),
+    secure: process.env.EMAIL_SECURE === 'true',
+    auth: {
+      user: email,
+      pass: emailPass,
+    },
+  })
 }
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.EMAIL_PORT || '587'),
-  secure: process.env.EMAIL_SECURE === 'true',
-  auth: {
-    user: email,
-    pass: emailPass,
-  },
-})
-
 export const sendResetCodeEmail = async (toEmail, code) => {
+  const transporter = getTransporter()
+
+  if (!transporter) {
+    console.warn(`[dev] EMAIL not configured — password reset code for ${toEmail}: ${code}`)
+    return
+  }
+
   const subject = 'Reset Your Password - AI Guidance Counselor'
   const htmlContent = `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
