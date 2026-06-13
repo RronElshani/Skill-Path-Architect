@@ -124,8 +124,9 @@ graph TD
 Ky diagram tregon varësitë dhe lidhjet ndërmjet paketimeve kryesore të sistemit tonë.
 
 ```mermaid
-subgraph SkillPathArchitect [Skill Path Architect]
-    subgraph Auth_Pkg [Auth Package]
+graph TD
+    subgraph SkillPathArchitect [Skill Path Architect]
+        subgraph Auth_Pkg [Auth Package]
     end
     subgraph User_Pkg [User Package]
     end
