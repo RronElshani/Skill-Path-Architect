@@ -32,6 +32,11 @@ AI Guidance Counselor is a full-stack web application that guides young graduate
 
 ## 📐 Architecture
 
+Detailed architecture, package modules, and process flows are fully visualized via interactive Mermaid diagrams:
+
+> 📊 **See all project diagrams**: [`docs/`]
+> * Includes: Admin Activity Flow, Process Swimlane, Layered Architecture, and Component Package diagrams.
+
 ### Backend — Layered Architecture
 
 ```
