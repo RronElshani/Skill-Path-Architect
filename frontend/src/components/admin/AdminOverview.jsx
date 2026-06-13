@@ -78,7 +78,7 @@ export default function AdminOverview({ stats, funnel, topCareers, activity, ser
             {[
               { name: 'Express API', desc: 'Auth, users, assessments', status: services.api },
               { name: 'MongoDB', desc: services.database || 'User & assessment storage', status: services.api === 'online' ? 'online' : 'offline' },
-              { name: 'XGBoost AI', desc: 'Career prediction engine', status: services.ai },
+              { name: 'SVM Classifier', desc: 'Career prediction engine', status: services.ai },
             ].map((svc) => (
               <div key={svc.name} className="flex items-start gap-3 rounded-lg border border-slate-800 bg-slate-950/50 p-4">
                 <StatusDot status={svc.status} />
