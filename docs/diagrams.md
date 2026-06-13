@@ -1,4 +1,4 @@
-# 📊 Diagramet e Projektit / Project Diagrams
+# Diagramet e Projektit / Project Diagrams
 
 Ky dokument përmban diagramet kryesore të arkitekturës dhe proceseve për projektin **Skill Path Architect / AI Guidance Counselor**. Diagramet janë shkruar në formatin **Mermaid** për t'u shfaqur në mënyrë interaktive.
 
