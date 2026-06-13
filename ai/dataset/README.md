@@ -54,4 +54,4 @@ Astronomer      | S2      | 12         | 6       | 12     | 16           | 16   
 - The raw intelligence scores are normalized to a `[0, 1]` range using `MinMaxScaler` before being fed to the model.
 - The dataset is used as-is for training — no external augmentation is applied. Gaussian noise is only added during robustness testing (see the notebook).
 
-Each entry represents a specific student's intelligence profile and their associated career recommendation. For the full ML pipeline, see [`../dataset_exploration.ipynb`](../dataset_exploration.ipynb).
+Each entry represents a specific student's intelligence profile and their associated career recommendation.
