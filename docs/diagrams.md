@@ -116,38 +116,3 @@ graph TD
     Business_Logic_Layer --> Data_Access_Layer
     Data_Access_Layer --> Database_Layer
 ```
-
----
-
-## 4. Diagrami i Paketimeve të Komponentëve / Component Package Diagram
-
-Ky diagram tregon varësitë dhe lidhjet ndërmjet paketimeve kryesore të sistemit tonë.
-
-```mermaid
-graph TD
-    subgraph SkillPathArchitect [Skill Path Architect]
-        subgraph Auth_Pkg [Auth Package]
-    end
-    subgraph User_Pkg [User Package]
-    end
-    subgraph Assessment_Pkg [Assessment Package]
-    end
-    subgraph Career_Pkg [Career Package]
-    end
-    subgraph Chat_Pkg [Chat Package]
-    end
-    subgraph Review_Pkg [Review Package]
-    end
-    subgraph MLModel_Pkg [ML Model Package]
-    end
-
-    User_Pkg -.-> Auth_Pkg
-    Assessment_Pkg -.-> User_Pkg
-    Assessment_Pkg -.-> Career_Pkg
-    Chat_Pkg -.-> User_Pkg
-    Review_Pkg -.-> User_Pkg
-    Review_Pkg -.-> Assessment_Pkg
-    MLModel_Pkg -.-> Assessment_Pkg
-    MLModel_Pkg -.-> Review_Pkg
-end
-```
