@@ -172,7 +172,13 @@ Navigate to **`http://localhost:5173`**
 
 ## 🔌 API Endpoints
 
-### Auth (`/api/auth`)
+The backend API is documented using the OpenAPI 3.0 standard. You can explore and test all endpoints interactively via Swagger UI:
+
+- **Swagger UI Endpoint**: [http://localhost:5004/api-docs](http://localhost:5004/api-docs) (when backend server is running)
+
+### Core Endpoints Summary
+
+#### Auth (`/api/auth`)
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
