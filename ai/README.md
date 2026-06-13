@@ -58,7 +58,7 @@ Raw CSV  →  Cleanup  →  Normalize (MinMaxScaler 0-1)  →  Encode Labels  �
 2. **Feature Normalization** — Scale all 8 intelligence scores to a `[0, 1]` range using `MinMaxScaler` to ensure no single feature dominates due to raw magnitude.
 3. **Label Encoding** — Convert the 72 profession names into numeric class labels.
 4. **Train/Test Split** — 80/20 stratified split (`random_state=42`).
-5. **Model Training** — XGBoost multi-class classifier (`multi:softmax`).
+5. **Model Training** — Multi-class classifier Training (`multi:softmax`).
 6. **Robustness Testing** — Add Gaussian noise (σ = 0.06) to simulate real-world self-assessment error and re-evaluate.
 
 ---
@@ -67,8 +67,8 @@ Raw CSV  →  Cleanup  →  Normalize (MinMaxScaler 0-1)  →  Encode Labels  �
 
 | Metric | Clean Data | Noisy Data (σ = 0.06) |
 |---|---|---|
-| **Top-1 Accuracy** | 98.33% | ~81.81% |
-| **Top-5 Accuracy** | — | ~97.08% |
+| **Top-1 Accuracy** | 98.33% | ~82.64% |
+| **Top-5 Accuracy** | — | ~98.06% |
 
 ### Key Findings
 
@@ -93,26 +93,38 @@ xgb.XGBClassifier(
 
 ---
 
-## 🔮 Planned: LLM Post-Processing
+## LLM Integration & Interactive Counselor
 
-> **Status:** Planned — not yet implemented.
+The AI module integrates with Large Language Models (LLMs) to provide two primary features:
+1. **Personalized Narrative Summaries** — Explains *why* the recommended careers fit the student's Multiple Intelligences profile, highlighting university pathways, skill building, and starter projects.
+2. **Interactive Career Counselor Chat** — An interactive conversational chat counselor grounded in the student's assessment scores and top predictions.
 
-The current pipeline outputs a ranked list of career predictions with confidence scores. A planned enhancement is to pass this output to a **Large Language Model** that generates a **personalized narrative summary** for the student — explaining in plain language *why* each career fits their profile, what educational paths to consider, and how their strengths connect across professions.
-
-### Intended Flow
+### System Flow
 
 ```
-XGBoost Top-5 Output  +  Student's Intelligence Profile  →  LLM Prompt  →  Human-Readable Career Summary
+XGBoost Top-5 Output + Intelligence Profile → LLM Prompt + Chat History → API Server (Flask) → Front-end UI
 ```
 
-The LLM would receive structured context (career names, confidence percentages, and the student's 8 intelligence scores) and produce a conversational explanation — e.g., *"Your strongest dimensions are Logical-Mathematical and Spatial, which is why Software Engineer and Architect rank highly. You might also explore Data Science, which draws on the same foundations."*
+### Key Features
 
-### Model Candidates
+* **Flexible Provider Configuration** — Configured via `ai/.env` variables. Reuses standard OpenAI-compatible API schemas to support easy swaps between providers (e.g., OpenAI, Groq, OpenRouter, or local Ollama).
+* **Local Template Fallback** — If no `LLM_API_KEY` is configured in the environment, the engine gracefully falls back to a deterministic, rule-based template summary and response generator to keep the application fully functional.
+* **Empathetic Grounding** — Employs custom system prompts to ensure the LLM stays grounded in the student's 8-dimensional scores and top predicted professions, giving structured guidance without hallucinating off-topic suggestions.
 
-- **Open-source** (self-hosted): LLaMA, Mistral, Gemma — full control, no API costs, privacy-first.
-- **API-controlled**: OpenAI GPT, Google Gemini, Anthropic Claude — fast integration, high quality, usage-based cost.
+### Flask API Endpoints
 
-The choice is not yet finalized and will depend on deployment environment, budget, and privacy constraints.
+* `POST /api/summary` — Generates a 3-4 paragraph personalized career narrative summary based on student scores and recommendations.
+* `POST /api/chat` — Returns the interactive counselor's chat reply to user message sequences, maintaining contextual awareness of the assessment scores and predictions.
+
+### Configuration (`ai/.env`)
+
+To activate live completions, create a `.env` file in the `ai` directory:
+
+```bash
+LLM_API_KEY=your_api_key_here
+LLM_BASE_URL=https://api.openai.com/v1  # Optional: API base URL (defaults to OpenAI)
+LLM_MODEL=gpt-4o-mini                    # Optional: Model name (defaults to gpt-4o-mini)
+```
 
 ---
 
@@ -126,14 +138,14 @@ The choice is not yet finalized and will depend on deployment environment, budge
 ### Install Dependencies
 
 ```bash
-pip install pandas numpy xgboost scikit-learn jupyter
+pip install -r requirements.txt
 ```
 
 ### Launch the Notebook
 
 ```bash
-cd ai
-jupyter notebook dataset_exploration.ipynb
+cd ai/jupyter
+jupyter notebook {notebook_name}.ipynb
 ```
 
 Run all cells sequentially. The notebook is self-contained — it loads the CSV, trains the model, and outputs accuracy metrics.
