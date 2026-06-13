@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import config from '../config/index.js'
 import userRepository from '../repositories/userRepository.js'
+import { sendResetCodeEmail } from './emailService.js'
 
 /**
  * Service layer — contains all business logic for authentication.
@@ -70,6 +71,8 @@ const authService = {
         email: user.email,
         role: user.role,
         assessment: user.assessment,
+        twoFactorEnabled: user.twoFactorEnabled,
+        createdAt: user.createdAt,
       },
     }
   },
@@ -107,6 +110,63 @@ const authService = {
 
   async logout(userId) {
     await userRepository.updateRefreshToken(userId, null)
+  },
+
+  async forgotPassword(email) {
+    const normalizedEmail = email.trim().toLowerCase()
+    const user = await userRepository.findByEmail(normalizedEmail)
+    if (!user) {
+      const error = new Error('User with this email does not exist')
+      error.statusCode = 404
+      throw error
+    }
+
+    // Generate random 4-digit code
+    const code = Math.floor(1000 + Math.random() * 9000).toString()
+    const expires = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+
+    await userRepository.updateById(user._id, {
+      resetPasswordCode: code,
+      resetPasswordExpires: expires,
+    })
+
+    await sendResetCodeEmail(user.email, code)
+    return { success: true }
+  },
+
+  async resetPassword(email, code, newPassword) {
+    const normalizedEmail = email.trim().toLowerCase()
+    const user = await userRepository.findByEmail(normalizedEmail, true)
+    if (!user) {
+      const error = new Error('User with this email does not exist')
+      error.statusCode = 404
+      throw error
+    }
+
+    if (!user.resetPasswordCode || user.resetPasswordCode !== code) {
+      const error = new Error('Invalid verification code')
+      error.statusCode = 400
+      throw error
+    }
+
+    if (new Date() > user.resetPasswordExpires) {
+      const error = new Error('Verification code has expired')
+      error.statusCode = 400
+      throw error
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(12)
+    const hashedPassword = await bcrypt.hash(newPassword, salt)
+
+    // Update password and clear reset fields
+    await userRepository.updateById(user._id, {
+      password: hashedPassword,
+      resetPasswordCode: null,
+      resetPasswordExpires: null,
+    })
+
+    return { success: true }
   },
 
   generateAccessToken(user) {

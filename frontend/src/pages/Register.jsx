@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import Input from '../components/Input.jsx'
 import Button from '../components/Button.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 export default function Register() {
   const { register } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -31,7 +32,12 @@ export default function Register() {
     setLoading(true)
     try {
       await register(name, email, password)
-      navigate('/dashboard')
+      navigate('/login', {
+        state: {
+          successMessage: 'Registration successful! Please sign in with your credentials.',
+          from: location.state?.from,
+        },
+      })
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.')
     } finally {
@@ -125,7 +131,11 @@ export default function Register() {
 
           <p className="mt-6 text-center text-sm text-slate-600">
             Already have an account?{' '}
-            <Link to="/login" className="font-medium text-brand-700 hover:text-brand-800">
+            <Link
+              to="/login"
+              state={location.state?.from ? { from: location.state.from } : undefined}
+              className="font-medium text-brand-700 hover:text-brand-800"
+            >
               Sign in
             </Link>
           </p>

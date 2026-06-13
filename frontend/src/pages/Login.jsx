@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import Input from '../components/Input.jsx'
 import Button from '../components/Button.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { loadRememberedEmail, saveRememberedEmail } from '../utils/rememberEmail.js'
+import { getSafeRedirectPath } from '../utils/authRedirect.js'
 
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
 
   useEffect(() => {
     const savedEmail = loadRememberedEmail('login')
@@ -22,6 +25,13 @@ export default function Login() {
     }
   }, [])
 
+  useEffect(() => {
+    if (location.state?.successMessage) {
+      setSuccess(location.state.successMessage)
+      window.history.replaceState({}, document.title)
+    }
+  }, [location])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -29,7 +39,7 @@ export default function Login() {
     try {
       await login(email, password)
       saveRememberedEmail(email, rememberMe, 'login')
-      navigate('/dashboard')
+      navigate(getSafeRedirectPath(location.state?.from), { replace: true })
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.')
     } finally {
@@ -94,6 +104,12 @@ export default function Login() {
             </p>
           </div>
 
+          {success && (
+            <div className="mt-6 rounded-lg border border-emerald-200 bg-emerald-50 p-3.5 text-sm text-emerald-700">
+              {success}
+            </div>
+          )}
+
           {error && (
             <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-3.5 text-sm text-red-700">
               {error}
@@ -132,7 +148,7 @@ export default function Login() {
                 />
                 Remember me
               </label>
-              <Link to="/login" className="text-sm font-medium text-brand-700 hover:text-brand-800">
+              <Link to="/forgot-password" className="text-sm font-medium text-brand-700 hover:text-brand-800">
                 Forgot password
               </Link>
             </div>
@@ -144,7 +160,11 @@ export default function Login() {
 
           <p className="mt-6 text-center text-sm text-slate-600">
             New to AI Guidance Counselor?{' '}
-            <Link to="/register" className="font-medium text-brand-700 hover:text-brand-800">
+            <Link
+              to="/register"
+              state={location.state?.from ? { from: location.state.from } : undefined}
+              className="font-medium text-brand-700 hover:text-brand-800"
+            >
               Create an account
             </Link>
           </p>

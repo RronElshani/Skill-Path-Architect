@@ -158,7 +158,7 @@ export default function AdminLogin() {
           </form>
 
           <p className="mt-10 text-center text-xs text-slate-500">
-            Dev admin: <span className="text-slate-400">admin@skillpatharchitect.ai</span> / <span className="text-slate-400">Admin123!</span>
+            Dev admin: <span className="text-slate-400">admin@guidance-counselor.ai</span> / <span className="text-slate-400">Admin123!</span>
           </p>
 
           <p className="mt-3 text-center text-xs text-slate-500">

@@ -75,7 +75,7 @@ AI-Guidance-Counselor/
 │   ├── dataset/
 │   │   ├── dataset_skill_predictor.csv   # 3,600 samples, 72 professions
 │   │   └── README.md
-│   ├── dataset_exploration.ipynb  # Full ML pipeline (XGBoost)
+│   ├── jupyter/                   # Jupyter Notebooks for training & baseline
 │   └── README.md                  # AI module documentation
 │
 ├── frontend/                      # Frontend (React + Vite + Tailwind)
@@ -172,7 +172,13 @@ Navigate to **`http://localhost:5173`**
 
 ## 🔌 API Endpoints
 
-### Auth (`/api/auth`)
+The backend API is documented using the OpenAPI 3.0 standard. You can explore and test all endpoints interactively via Swagger UI:
+
+- **Swagger UI Endpoint**: [http://localhost:5004/api-docs](http://localhost:5004/api-docs) (when backend server is running)
+
+### Core Endpoints Summary
+
+#### Auth (`/api/auth`)
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
@@ -210,11 +216,10 @@ Navigate to **`http://localhost:5173`**
 
 | Property | Value |
 |---|---|
-| Algorithm | XGBoost (multi-class) |
+| Algorithm | SVM (multi-class) |
 | Dataset Size | 3,600 samples |
 | Career Categories | 72 unique professions |
 | Input Features | 8 intelligence scores (Gardner's MI) |
-| Baseline Accuracy | **98.33%** |
 | Noisy Top-5 Accuracy | **~97%** |
 
 The model is designed to be **robust to self-assessment error** — even if students rate themselves imprecisely, the correct career still appears in the Top 5 recommendations ~97% of the time.
@@ -223,13 +228,11 @@ The model is designed to be **robust to self-assessment error** — even if stud
 
 ---
 
-## 💡 Planned Feature: LLM-Powered Career Summary
+LLM-Powered Career Summary
 
-> **Status:** Planned — not yet implemented.
+After the XGBoost model produces a student's Top-5 career predictions, the raw results alone can feel abstract. The next step is to a **Large Language Model (LLM)** that takes the prediction output and generates a **personalized, human-readable summary** for the student.
 
-After the XGBoost model produces a student's Top-5 career predictions, the raw results alone can feel abstract. The next step is to integrate a **Large Language Model (LLM)** that takes the prediction output and generates a **personalized, human-readable summary** for the student.
-
-### How It Would Work
+### How It Works
 
 ```
 Student Assessment  →  XGBoost (Top-5 Predictions)  →  LLM Prompt  →  Personalized Career Summary
@@ -242,11 +245,10 @@ Student Assessment  →  XGBoost (Top-5 Predictions)  →  LLM Prompt  →  Pers
    - **Suggests actionable next steps** — relevant university programs, certifications, entry-level roles, or skills to develop.
    - **Highlights connections** between careers the student may not have considered (e.g., "Your high spatial and logical scores make you a strong fit for both architecture *and* data science").
 
-### Model Options Under Consideration
+### Model API Options
 
 | Approach | Examples | Trade-offs |
 |---|---|---|
-| **Open-source (self-hosted)** | LLaMA, Mistral, Gemma | Full control, no API costs, privacy-friendly — but requires GPU infrastructure |
 | **API-controlled** | OpenAI GPT, Google Gemini, Anthropic Claude | Easy to integrate, high quality — but introduces API costs and external dependency |
 
 The final choice will depend on deployment constraints, cost, and privacy requirements. Both approaches are viable — the LLM receives only the prediction output and intelligence scores (no sensitive personal data beyond what the student entered).

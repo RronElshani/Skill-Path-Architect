@@ -116,7 +116,7 @@ export function AuthProvider({ children }) {
       throw new Error(result.message || result.errors?.[0]?.message || 'Registration failed')
     }
 
-    return await login(normalizedEmail, password)
+    return result
   }
 
   const logout = async () => {

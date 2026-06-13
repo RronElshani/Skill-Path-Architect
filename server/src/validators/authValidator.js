@@ -49,3 +49,42 @@ export const refreshTokenValidation = [
     .notEmpty()
     .withMessage('Refresh token is required'),
 ]
+
+/**
+ * Validation rules for forgot password.
+ */
+export const forgotPasswordValidation = [
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required')
+    .isEmail()
+    .withMessage('Please provide a valid email')
+    .normalizeEmail(),
+]
+
+/**
+ * Validation rules for resetting password.
+ */
+export const resetPasswordValidation = [
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required')
+    .isEmail()
+    .withMessage('Please provide a valid email')
+    .normalizeEmail(),
+  body('code')
+    .trim()
+    .notEmpty()
+    .withMessage('Verification code is required')
+    .isLength({ min: 4, max: 4 })
+    .withMessage('Verification code must be exactly 4 digits')
+    .isNumeric()
+    .withMessage('Verification code must contain only numbers'),
+  body('newPassword')
+    .notEmpty()
+    .withMessage('New password is required')
+    .isLength({ min: 6 })
+    .withMessage('New password must be at least 6 characters'),
+]

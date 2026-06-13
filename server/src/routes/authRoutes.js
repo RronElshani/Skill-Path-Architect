@@ -6,6 +6,8 @@ import {
   registerValidation,
   loginValidation,
   refreshTokenValidation,
+  forgotPasswordValidation,
+  resetPasswordValidation,
 } from '../validators/authValidator.js'
 
 const router = Router()
@@ -14,6 +16,8 @@ const router = Router()
 router.post('/register', registerValidation, validate, authController.register)
 router.post('/login', loginValidation, validate, authController.login)
 router.post('/refresh-token', refreshTokenValidation, validate, authController.refreshToken)
+router.post('/forgot-password', forgotPasswordValidation, validate, authController.forgotPassword)
+router.post('/reset-password', resetPasswordValidation, validate, authController.resetPassword)
 
 // Protected routes
 router.post('/logout', authenticate, authController.logout)

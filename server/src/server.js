@@ -5,6 +5,9 @@ import config from './config/index.js'
 import connectDB from './config/db.js'
 import routes from './routes/index.js'
 import errorHandler from './middleware/errorHandler.js'
+import swaggerUi from 'swagger-ui-express'
+import { swaggerSpec } from './config/swagger.js'
+
 
 const app = express()
 
@@ -35,6 +38,9 @@ app.use((req, res, next) => {
   })
 })
 
+// ——— API Documentation ———
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+
 // ——— Routes ———
 app.use('/api', routes)
 
@@ -55,6 +61,7 @@ const startServer = async () => {
 
   app.listen(config.port, () => {
     console.log(`Server running in ${config.nodeEnv} mode on port ${config.port}`)
+    console.log(`API documentation available at http://localhost:${config.port}/api-docs`)
   })
 }
 

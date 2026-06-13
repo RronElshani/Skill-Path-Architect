@@ -4,6 +4,8 @@ import authRoutes from './authRoutes.js'
 import userRoutes from './userRoutes.js'
 import reviewRoutes from './reviewRoutes.js'
 import chatRoutes from './chatRoutes.js'
+import careerRoutes from './careerRoutes.js'
+import modelRoutes from './modelRoutes.js'
 import config from '../config/index.js'
 import { dbStorageMode, usingInMemoryDb } from '../config/db.js'
 
@@ -13,6 +15,8 @@ router.use('/auth', authRoutes)
 router.use('/users', userRoutes)
 router.use('/reviews', reviewRoutes)
 router.use('/chat', chatRoutes)
+router.use('/careers', careerRoutes)
+router.use('/admin/models', modelRoutes)
 
 // Health check
 router.get('/health', (req, res) => {

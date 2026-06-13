@@ -32,6 +32,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       select: false,
     },
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    resetPasswordCode: {
+      type: String,
+    },
+    resetPasswordExpires: {
+      type: Date,
+    },
     assessment: {
       scores: {
         language_skills: { type: Number, default: 3.0 },

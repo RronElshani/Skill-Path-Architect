@@ -26,3 +26,20 @@ server/data/
 .idea/
 *.swp
 *.swo
+
+
+# Baseline ML artifacts (regenerable via `npm run train:baseline`)
+ai/models/*.joblib
+# Model evaluation directories
+model_evaluations/
+ai/models/archive/
+
+# Unzipped model files
+ai/models/random_forest/career_prediction_model.h5
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Jupyter checkpoints
+.ipynb_checkpoints/

@@ -1,8 +1,10 @@
 import { Routes, Route } from 'react-router-dom'
+import ScrollToTop from './components/ScrollToTop.jsx'
 import RootLayout from './components/RootLayout.jsx'
 import Home from './pages/Home.jsx'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
+import ForgotPassword from './pages/ForgotPassword.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import Assessment from './pages/Assessment.jsx'
 import Results from './pages/Results.jsx'
@@ -13,16 +15,20 @@ import AdminEntry from './components/AdminEntry.jsx'
 import AdminLogin from './pages/AdminLogin.jsx'
 import Methodology from './pages/Methodology.jsx'
 import AboutUs from './pages/AboutUs.jsx'
+import NotFound from './pages/NotFound.jsx'
 
 export default function App() {
   return (
-    <Routes>
+    <>
+      <ScrollToTop />
+      <Routes>
       <Route element={<RootLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/methodology" element={<Methodology />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/assessment" element={<Assessment />} />
         <Route path="/results" element={<Results />} />
@@ -31,7 +37,9 @@ export default function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminEntry />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
+    </>
   )
 }
